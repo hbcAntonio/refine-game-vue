@@ -12,8 +12,8 @@ const clif_add_item = (id='ancient-cape', qty=1, options={}) => {
 }
 
 // Default items
-clif_add_item(itemdb.ids.ANCIENT_CAPE, 2, {attribute: 1, refineCount: 4})
-clif_add_item(itemdb.ids.CRITICAL_RING, 2)
+clif_add_item(itemdb.ids.ANCIENT_CAPE, 3, {refineCount: 4})
+clif_add_item(itemdb.ids.CRITICAL_RING, 3, {refineCount: 4})
 clif_add_item(itemdb.ids.ZENY, 1000000)
 clif_add_item(itemdb.ids.ELUNIUM, 10)
 clif_add_item(itemdb.ids.ORIDECON, 10)
