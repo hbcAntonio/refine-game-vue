@@ -1,195 +1,58 @@
 <template>
-  <repair-modal
-    v-if="sd.repair.show"
-    v-bind="sd.repair"
-    @use="repairItem"
-    @close="sd.repair.show = false"
+  <RepairModal
+    v-if="repair.sd.show"
+    v-bind="repair.sd"
+    @use="repair.repair(inventory, refine.sd.equip)"
+    @close="repair.sd.show = false"
   />
+
   <div class="main-refine">
-    <div class="equip-list">
-      <ul>
-        <li
-          v-for="equip in equips"
-          :key="equip.nameid"
-          :class="{broken:equip.attribute}"
-          @click="selectEquip(equip)"
-        >
-          <img :src="itemviewtable[equip.resourceviewid]">
-          <span
-            v-if="equip.refineCount"
-            class="refine-count"
-          >+{{ equip.refineCount }}</span><span
-            class="equip-name"
-          >{{ equip.name }}</span>
-        </li>
-      </ul>
-    </div>
+    <RefinableEquipList
+      :inventory="inventory"
+      @select-equip="refine.setEquip"
+    />
 
     <div class="refine-interface">
-      <div class="dialog">
-        <p>{{ dialog }}</p>
-      </div>
+      <RefineDialog :dialog="refine.sd.dialog" />
 
       <input
         type="button"
         value="Refine"
         class="refine-btn"
-        @click="refine"
+        @click="refine.start"
       >
 	
-      <div
-        v-if="selectedEquip"
-        class="selected-equip"
-        :class="{'selected-equip__broken': selectedEquip.attribute}"
-      >
-        <div class="img-container">
-          <img :src="itemviewtable[selectedEquip.resourceviewid]">
-        </div>
-        <span
-          v-if="selectedEquip.refineCount"
-          class="refine-count"
-        >+{{ selectedEquip.refineCount }}</span><span
-          class="equip-name"
-        >{{ selectedEquip.name }}</span>
-
-        <input
-          v-if="selectedEquip.attribute"
-          type="button"
-          class="repair-btn"
-          value="repair"
-          @click="repair"
-        >
-      </div>
-    
+      <RefineEquipView
+        :equip="refine.sd.equip"
+        @repair="repair.start(inventory, refine.sd.equip)"
+      />
 
     <!-- <div id="sprite-container">
       <div id="sprite-image" />
     </div> -->
     </div>
   </div>
-  
-
-  <!-- <pre><div>{{ selectedEquip }}</div></pre> -->
 </template>
 
 <script>
 import RepairModal from './components/RepairModal.vue'
-import * as itemviewtable from './functions/itemviewtable'
+import RefinableEquipList from './components/RefinableEquipList.vue'
+import RefineDialog from './components/RefineDialog.vue'
+import RefineEquipView from './components/RefineEquipView.vue'
 
-const MAX_REFINE = 15
-const MIN_REFINE = 0
-const REFINE_TIME = 625
-const SUCCESS_RATE = .5
-const BREAK_RATE = .99
-
-const DIALOG_MAP = {
-	EMPTY_SLOT: 'Should I refine your body then?!',
-	SUCCESS_REFINE: 'Splendid job I did! So happy for you!',
-	FAILURE_REFINE: 'Oh no... I swear I will try to do better next time!',
-	BREAK_REFINE: 'I... don\'t even know what to say!!!',
-	IDLE: 'My name is Holgrehenn, and I hate you!',
-	REFINING: 'Here we go...',
-	BUSY: 'I happen to be busy already....',
-	BROKEN: 'I cannot refine broken items...'
-}
-
-const generateEquip = (i=3) => {
-	return i % 2 ? 
-		{id: 'ancient-cape', resourceviewid: 'ancientcape', resourceview: {}, nameid: `ancient-cape-${i}`, name: 'Ancient Cape', refineCount: 4, attribute: 0} : 
-		{id: 'critical-ring', resourceviewid: 'criticalring', resourceview: {}, nameid: `critical-ring-${i}`, name: 'Critical Ring', refineCount: 4, attribute: 0}
-}
-
-const clif_refine_sub = (equip, success) => {
-	if (equip.refineCount < 4) success = true
-
-	equip.refineCount += 1 * (success ? 1: -1)
-	equip.refineCount = equip.refineCount > MAX_REFINE ? 15 : (equip.refineCount < MIN_REFINE ? 0 : equip.refineCount)
-
-	return success
-}
-
-const clif_refine = (equip, rate=SUCCESS_RATE, breakRate=BREAK_RATE) => {
-	if (equip.attribute) return false
-
-	if (!clif_refine_sub(equip, Math.random() < rate)) {
-		const shouldBreak = Math.random() < breakRate
-		equip.attribute = shouldBreak ? 1 : 0
-		return false
-	}
-
-	return true
-}
-
-const clif_refine_stop_check = (sd, equip) => {
-	if (sd.refining) return DIALOG_MAP.BUSY
-	if (!equip) return DIALOG_MAP.EMPTY_SLOT
-	if (equip.attribute) return DIALOG_MAP.BROKEN
-	return 
-}
+import inventory from './functions/core/inventory'
+import refine from './functions/core/refine'
+import repair from './functions/core/repair'
 
 export default {
-	components: { RepairModal},
+	components: { RepairModal, RefinableEquipList, RefineDialog, RefineEquipView },
 	data() {
 		return {
-			equips: Array.from(Array(5)).map((el, index)=> generateEquip(index)),
-			selectedEquip: '',
-			itemviewtable,
-			dialog: DIALOG_MAP.IDLE,
-			sd: { refining: false, successRate: 0.5, repair: { show: false, materials: []} }
+			inventory,
+			refine, 
+			repair
 		}
 	},
-
-	created() {
-		console.log({itemviewtable})
-	},
-
-	methods: {
-		selectEquip(equip) {
-			this.selectedEquip = equip
-		},
-
-		repairItem($event) {
-			this.selectedEquip.attribute = 0
-			this.equips.splice(this.equips.findIndex(equip => equip.nameid === $event.nameid), 1)
-			this.sd.repair.show = false
-		},
-
-		async refine() {
-			this.dialog = clif_refine_stop_check(this.sd, this.selectedEquip)
-			if (this.dialog) {
-				return
-			}
-
-			this.sd.refining = true
-			this.dialog = DIALOG_MAP.REFINING
-
-			await new Promise(resolve => setTimeout(() => {
-				if (clif_refine(this.selectedEquip)) {
-					this.dialog = DIALOG_MAP.SUCCESS_REFINE
-					resolve()
-					return
-				}
-
-				this.dialog = this.selectedEquip.attribute ? DIALOG_MAP.BREAK_REFINE : DIALOG_MAP.FAILURE_REFINE
-				resolve()
-			}, REFINE_TIME))
-
-			this.sd.refining = false
-		},
-
-		repair() {
-			// needs to have at least one of the same item
-
-			// look for an equip that is the same
-			const equips = this.equips
-			const materials = equips.filter(equip => equip.id === this.selectedEquip.id && equip.nameid !== this.selectedEquip.nameid)
-
-			if (materials.length) {
-				this.sd.repair.show = true
-				this.sd.repair.materials = materials
-			}
-		}
-	}
 }
 </script>
 
@@ -215,55 +78,6 @@ export default {
 	display: grid;
 	grid-template-columns: 1fr 2fr;
 	grid-template-rows: calc(100vh - 80px);
-	
-	.equip-list {
-		font-size: 1.25rem;
-		color: blue;
-		background: #f5f5f5;
-		color: rgb(0, 0, 0);
-		padding: 20px;
-
-		ul {
-			list-style: none;
-			padding: 0;
-			margin: 0;
-
-			li {
-				transition: all 0.1s ease;
-				padding: 20px;
-				background: white;
-				border-radius: 20px;
-				margin-bottom: 10px;
-				display: grid;
-				grid-template-columns: 1fr 1fr 5fr;
-				align-items: center;
-
-				img {
-					width: 35px;
-					height: 35px;
-					mix-blend-mode: multiply;
-				}
-			}
-
-			li:hover {
-				background: rgb(255, 187, 0);
-				transform: scale(1.05, 1.05);
-			}
-		}
-
-		.refine-count {
-			font-weight: bolder;
-			padding: 5px;
-		}
-
-		.equip-name {
-			padding: 5px;
-		}
-
-		.broken {
-			color: red;
-		}
-	}
 
     .refine-interface {
 		background: url('./assets/holgrehenn-bg.jpg');

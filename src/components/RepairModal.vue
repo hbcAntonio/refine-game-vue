@@ -27,7 +27,7 @@
 <script>
 export default {
 	props: {
-		materials: {type: Array, default:() => []}
+		materials: {type: Object, default:() => {}}
 	},
 }
 </script>
