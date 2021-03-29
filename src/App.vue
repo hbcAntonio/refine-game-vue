@@ -2,7 +2,7 @@
   <RepairModal
     v-if="repair.sd.show"
     v-bind="repair.sd"
-    @use="repair.repair(inventory, refine.sd.equip)"
+    @use="repair.repair($event, refine.sd.equip, inventory)"
     @close="repair.sd.show = false"
   />
 

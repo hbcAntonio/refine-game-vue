@@ -5,8 +5,8 @@ const sd = reactive({
 	show: false
 })
 
-const clif_repair_item = (inventory, equip) => {
-	delete inventory.itemlist[equip.uid]
+const clif_repair_item = (material, equip, inventory) => {
+	delete inventory.itemlist[material.uid]
 	equip.attribute = 0
 	sd.show=false
 }
