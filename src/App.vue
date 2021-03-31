@@ -6,6 +6,8 @@
     @close="repair.sd.show = false"
   />
 
+  <RefineMaterialUI />
+
   <div class="main-refine">
     <RefinableEquipList
       :inventory="inventory"
@@ -19,11 +21,12 @@
         type="button"
         value="Refine"
         class="refine-btn"
-        @click="refine.start"
+        @click="refine.start(inventory)"
       >
 	
       <RefineEquipView
         :equip="refine.sd.equip"
+        :reqs="refine.getReqs(inventory)"
         @repair="repair.start(inventory, refine.sd.equip)"
       />
 
@@ -39,13 +42,14 @@ import RepairModal from './components/RepairModal.vue'
 import RefinableEquipList from './components/RefinableEquipList.vue'
 import RefineDialog from './components/RefineDialog.vue'
 import RefineEquipView from './components/RefineEquipView.vue'
+import RefineMaterialUI from './components/RefineMaterialUI.vue'
 
 import inventory from './functions/core/inventory'
 import refine from './functions/core/refine'
 import repair from './functions/core/repair'
 
 export default {
-	components: { RepairModal, RefinableEquipList, RefineDialog, RefineEquipView },
+	components: { RepairModal, RefinableEquipList, RefineDialog, RefineEquipView, RefineMaterialUI },
 	data() {
 		return {
 			inventory,

@@ -4,6 +4,7 @@ const db = {
 	[ids.ANCIENT_CAPE]: {
 		resourceviewid: 'ancientcape',
 		name: 'Ancient Cape',
+		armor: true,
 		equipment: true
 	},
 	[ids.CRITICAL_RING]: {
@@ -25,6 +26,7 @@ const db = {
 		resourceviewid: 'zeny',
 		name: 'Zeny',
 		stackable: true,
+		currency: true
 	}
 }
 

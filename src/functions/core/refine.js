@@ -1,10 +1,12 @@
 import { reactive } from 'vue'
+import inventoryState from './inventory'
 
 const MAX_REFINE = 15
 const MIN_REFINE = 0
 const REFINE_TIME = 625
-const SUCCESS_RATE = .5
-const BREAK_RATE = .99
+const SUCCESS_RATE = .35
+const BREAK_RATE = .5
+const ZENY_FIXED_REQ = 10000
 
 const DIALOG_MAP = {
 	EMPTY_SLOT: 'Should I refine your body then?!',
@@ -14,8 +16,17 @@ const DIALOG_MAP = {
 	IDLE: 'My name is Holgrehenn, and I hate you!',
 	REFINING: 'Here we go...',
 	BUSY: 'I happen to be busy already....',
-	BROKEN: 'I cannot refine broken items...'
+	BROKEN: 'I cannot refine broken items...',
+	MISSING_ORIDECON: 'I need an Oridecon to refine this item...',
+	MISSING_ZENY: 'You can\'t expect me to do this for free!'
 }
+
+const sd = reactive({
+	refining: false,
+	dialog: 'Hello, which equipment would you like to refine today?',
+	equip: {}
+})
+
 
 const clif_refine_sub = (equip, success) => {
 	if (equip.refineCount < 4) success = true
@@ -39,27 +50,46 @@ const clif_refine = (equip, rate=SUCCESS_RATE, breakRate=BREAK_RATE) => {
 }
 
 const clif_refine_stop_check = () => {
-	if (sd.refining) return DIALOG_MAP.BUSY
-	if (!sd.equip) return DIALOG_MAP.EMPTY_SLOT
-	if (sd.equip.attribute) return DIALOG_MAP.BROKEN
-	return 
+	if (sd.refining) sd.dialog=DIALOG_MAP.BUSY
+	if (!sd.equip.name) sd.dialog=DIALOG_MAP.EMPTY_SLOT
+	if (sd.equip.attribute) sd.dialog=DIALOG_MAP.BROKEN
+
+	return !!sd.dialog
+}
+
+const clif_refine_get_reqs = () => {
+	const zeny = ZENY_FIXED_REQ * sd.equip.refineCount
+	const mat = sd.equip.armor ? 'elunium' : 'oridecon'
+
+	return { zeny, mat }
+}
+
+const clif_refine_check_requirements = (inventory) => {
+	const { zeny, mat } = clif_refine_get_reqs
+
+	if (inventory.findItem(mat).length <= 0) sd.dialog = DIALOG_MAP.MISSING_MATERIAL
+	if (inventory.zeny() <= zeny) sd.dialog = DIALOG_MAP.MISSING_ZENY
+
+	if (sd.dialog) return false
+
+	inventory.delItem('zeny', zeny)
+	inventory.delItem(mat, 1)
+
+	return true
 }
 
 
-const sd = reactive({
-	refining: false,
-	dialog: 'Hello, which equipment would you like to refine today?',
-	equip: {}
-})
 
 const setEquip = (equip) => {
 	sd.equip = equip
 }
 
 
-const start = async () => {
-	sd.dialog = clif_refine_stop_check()
-	if (sd.dialog) return
+const start = async (inventory=inventoryState) => {
+	sd.dialog = ''
+
+	if (clif_refine_stop_check()) return
+	if (!clif_refine_check_requirements(inventory)) return 
 
 	sd.refining = true
 	sd.dialog = DIALOG_MAP.REFINING
@@ -81,7 +111,8 @@ const start = async () => {
 const refineState = {
 	sd,
 	setEquip,
-	start
+	start,
+	getReqs: clif_refine_get_reqs
 }
 
 

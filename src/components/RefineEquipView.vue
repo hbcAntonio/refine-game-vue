@@ -14,21 +14,36 @@
       class="equip-name"
     >{{ equip.name }}</span>
 
-    <input
-      v-if="equip.attribute"
-      type="button"
-      class="repair-btn"
-      value="repair"
-      @click="$emit('repair')"
-    >
+    <!-- requirements -->
+    <div class="requirements">
+      <div>
+        <div>Zeny x{{ reqs.zeny }}</div>
+        <div>{{ inventory.itemInfo(reqs.mat).name }} x1</div>
+      </div>
+
+      <input
+        v-if="equip.attribute"
+        type="button"
+        class="repair-btn"
+        value="repair"
+        @click="$emit('repair')"
+      >
+    </div>
   </div>
 </template>
 
 <script>
 import * as itemviewtable from '../functions/itemviewtable.js'
+import inventory from '../functions/core/inventory'
+
 export default {
-	props: { equip: { type: Object, default: () => {}}},
+	props: { 
+		equip: { type: Object, default: () => {} },
+		reqs: { type: Object, default: () => {} }
+	},
 	emits: ['repair'],
-	setup() { return { itemviewtable }}
+	setup() { 
+		return { itemviewtable, inventory } 
+	}
 }
 </script>
