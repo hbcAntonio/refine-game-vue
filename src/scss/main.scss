@@ -1,0 +1,17 @@
+@import "./_normalize.scss";
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;200;500&display=swap');
+
+body {
+	overflow: hidden;
+	font-family: 'Noto Sans JP', sans-serif;
+}
+
+.btn {
+	padding: 5px;
+	background: none;
+	color: rgb(35, 123, 255);
+	border: none;
+	text-transform: capitalize;
+	border: 1px solid rgb(35, 123, 255);
+	border-radius: 10px;
+}

@@ -1,66 +1,71 @@
 <template>
-  <RepairModal
-    v-if="repair.sd.show"
-    v-bind="repair.sd"
-    @use="repair.repair($event, refine.sd.equip, inventory)"
-    @close="repair.sd.show = false"
-  />
+	<div
+		class="inputs"
+		style="display:grid"
+	>
+		<input
+			type="button"
+			:value="`show repair modal: ${sd.showRepair.value}`"
+			@click="sd.showRepair.value = true"
+		>
 
-  <RefineMaterialUI />
+		<input
+			type="button"
+			:value="`show inventory modal: ${sd.showInventory.value}`"
+			@click="sd.showInventory.value = true"
+		>
+	</div>
 
-  <div class="main-refine">
-    <RefinableEquipList
-      :inventory="inventory"
-      @select-equip="refine.setEquip"
-    />
+	<RepairModal v-if="sd.showRepair.value" />
 
-    <div class="refine-interface">
-      <RefineDialog :dialog="refine.sd.dialog" />
+	<Inventory
+		v-if="sd.showInventory.value"
+	/>
 
-      <input
-        type="button"
-        value="Refine"
-        class="refine-btn"
-        @click="refine.start(inventory)"
-      >
-	
-      <RefineEquipView
-        :equip="refine.sd.equip"
-        :reqs="refine.getReqs(inventory)"
-        @repair="repair.start(inventory, refine.sd.equip)"
-      />
+	<RefineMaterialUI />
 
-    <!-- <div id="sprite-container">
-      <div id="sprite-image" />
-    </div> -->
-    </div>
-  </div>
+	<!-- Stats -->
+	<!-- Marketplace -->
+	<!-- Item info modal -->
+	<!-- Repair item info modal -->
+	<!-- Refine UI -->
+
+	<RefineUI />
 </template>
 
 <script>
 import RepairModal from './components/RepairModal.vue'
-import RefinableEquipList from './components/RefinableEquipList.vue'
-import RefineDialog from './components/RefineDialog.vue'
-import RefineEquipView from './components/RefineEquipView.vue'
-import RefineMaterialUI from './components/RefineMaterialUI.vue'
+import RefineMaterialUI from './components/RefineUI/RefineMaterialUI.vue'
+import RefineUI from './components/RefineUI/RefineUI.vue'
+import Inventory from './components/Inventory/Inventory.vue'
 
 import inventory from './functions/core/inventory'
 import refine from './functions/core/refine'
 import repair from './functions/core/repair'
 
+import * as itemviewtable from './functions/itemviewtable'
+import globalSd from './functions/globalsd'
+
+import { provide } from 'vue'
+
 export default {
-	components: { RepairModal, RefinableEquipList, RefineDialog, RefineEquipView, RefineMaterialUI },
-	data() {
+	components: { RepairModal, RefineMaterialUI, RefineUI, Inventory},
+	setup() {
+		provide('inventory', inventory)
+		provide('refine', refine)
+		provide('repair', repair)
+		provide('itemviewtable', itemviewtable)
+
 		return {
-			inventory,
-			refine, 
-			repair
+			inventory, refine, repair, sd: globalSd
 		}
-	},
+	}
 }
 </script>
 
 <style lang="scss">
+@import "./scss/main.scss";
+
 .main-refine {
 	padding: 40px;
 

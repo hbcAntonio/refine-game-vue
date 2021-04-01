@@ -2,5 +2,6 @@
     "eslint.validate": [
         "javascript",
         "vue"
-    ]
+    ],
+    "editor.insertSpaces": false
 }

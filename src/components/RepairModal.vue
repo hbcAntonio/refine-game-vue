@@ -1,34 +1,40 @@
 <template>
-  <div class="repair-modal">
-    <div class="modal-content">
-      <input
-        type="button"
-        value="close"
-        class="close"
-        @click="$emit('close')"
-      >
-      <ul>
-        <li
-          v-for="material in materials"
-          :key="material.nameid"
-        >
-          +{{ material.refineCount }} {{ material.name }}
-          <input
-            type="button"
-            value="use"
-            @click="$emit('use', material)"
-          >
-        </li>
-      </ul>
-    </div>
-  </div>
+	<div class="repair-modal">
+		<div class="modal-content">
+			<input
+				type="button"
+				value="close"
+				class="close"
+				@click="repair.sd.show = false"
+			>
+			<ul>
+				<li
+					v-for="material in repair.sd.materials"
+					:key="material.nameid"
+				>
+					+{{ material.refineCount }} {{ material.name }}
+					<input
+						type="button"
+						value="use"
+						@click="repair.repair(material, refine.sd.equip, inventory)"
+					>
+				</li>
+			</ul>
+		</div>
+	</div>
 </template>
 
 <script>
+import { inject } from 'vue'
+
 export default {
-	props: {
-		materials: {type: Object, default:() => {}}
-	},
+	setup() {
+		const repair = inject('repair')
+		const refine = inject('refine')
+		const inventory = inject('inventory')
+
+		return { repair, refine, inventory}
+	}
 }
 </script>
 

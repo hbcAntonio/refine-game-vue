@@ -1,11 +1,11 @@
 <template>
-  Oridecon: {{ oridecon.qty }}
-  Elunium: {{ elunium.qty }}
-  Zeny: {{ zeny.qty }}
+	Oridecon: {{ oridecon.qty }}
+	Elunium: {{ elunium.qty }}
+	Zeny: {{ zeny.qty }}
 </template>
 
 <script>
-import inventoryState from '../functions/core/inventory'
+import inventoryState from '../../functions/core/inventory'
 export default {
 	props: { inventory: {type:Object, default: () => inventoryState}},
 	setup(props) {

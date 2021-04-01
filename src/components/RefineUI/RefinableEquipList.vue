@@ -1,27 +1,27 @@
 <template>
-  <div class="equip-list">
-    <ul>
-      <li
-        v-for="equip in refinable"
-        :key="equip.nameid"
-        :class="{broken:equip.attribute}"
-        @click="$emit('select-equip', equip)"
-      >
-        <img :src="itemviewtable[equip.resourceviewid]">
-        <span
-          v-if="equip.refineCount"
-          class="refine-count"
-        >+{{ equip.refineCount }}</span><span
-          class="equip-name"
-        >{{ equip.name }}</span>
-      </li>
-    </ul>
-  </div>
+	<div class="equip-list">
+		<ul>
+			<li
+				v-for="equip in refinable"
+				:key="equip.nameid"
+				:class="{broken:equip.attribute}"
+				@click="$emit('select-equip', equip)"
+			>
+				<img :src="itemviewtable[equip.resourceviewid]">
+				<span
+					v-if="equip.refineCount"
+					class="refine-count"
+				>+{{ equip.refineCount }}</span><span
+					class="equip-name"
+				>{{ equip.name }}</span>
+			</li>
+		</ul>
+	</div>
 </template>
 
 <script>
 import { computed } from 'vue'
-import * as itemviewtable from '../functions/itemviewtable'
+import * as itemviewtable from '../../functions/itemviewtable'
 const MAX_REFINE = 15
 
 export default {
@@ -70,8 +70,6 @@ export default {
 
             img {
                 width: 35px;
-                height: 35px;
-                mix-blend-mode: multiply;
             }
         }
 

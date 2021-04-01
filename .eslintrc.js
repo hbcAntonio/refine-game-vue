@@ -30,6 +30,7 @@ module.exports = {
 		'semi': [
 			'error',
 			'never'
-		]
+		],
+		'vue/html-indent': ['error', 'tab']
 	}
 }

@@ -2,6 +2,10 @@ import { reactive } from 'vue'
 import * as itemdb from './itemdb'
 
 const itemlist = reactive({})
+const sd = reactive({
+	show: true,
+	selectedItem: {}
+})
 
 const clif_get_item_info = (id='ancient-cape') => {
 	return itemdb.db[id] || { name: 'apple', qty: 1, refineCount: 0, stackable: true}
@@ -32,19 +36,23 @@ const clif_del_item = (nameid='oridecon', qty=1) => {
 }
 
 // Default items
-clif_add_item(itemdb.ids.ANCIENT_CAPE, 3, {refineCount: 4})
-clif_add_item(itemdb.ids.CRITICAL_RING, 3, {refineCount: 4})
-clif_add_item(itemdb.ids.ZENY, 1000000)
-clif_add_item(itemdb.ids.ELUNIUM, 10)
-clif_add_item(itemdb.ids.ORIDECON, 10)
+clif_add_item(itemdb.ids.ZENY, 10000000)
+clif_add_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 7, attribute: 1})
+clif_add_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 4, attribute: 1})
+clif_add_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 15, attribute: 0})
+clif_add_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 3, attribute: 1})
+clif_add_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 4, attribute: 1})
+clif_add_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 9, attribute: 0})
+clif_add_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 15, attribute: 0})
+clif_add_item(itemdb.ids.ELUNIUM, 100)
+clif_add_item(itemdb.ids.ORIDECON, 100)
 
-const inventoryState = {
-	itemlist,
+export default {
+	itemlist, // separate from state descriptor -- unity them? TODO:
+	sd,
 	addItem: clif_add_item,
 	findItem: clif_find_item,
 	delItem: clif_del_item,
 	itemInfo: clif_get_item_info,
 	zeny: clif_find_currency
 }
-
-export default inventoryState

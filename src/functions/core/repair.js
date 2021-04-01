@@ -1,5 +1,6 @@
 import { reactive } from 'vue'
 
+// State descriptor
 const sd = reactive({
 	materials: {},
 	show: false
@@ -11,8 +12,8 @@ const clif_repair_item = (material, equip, inventory) => {
 	sd.show=false
 }
 
-
 const clif_check_repair = (inventory, equip) => {
+	console.log('clif_check_repair', inventory.itemlist)
 	sd.materials = {}
     
 	for (let key in inventory.itemlist) {
@@ -24,13 +25,13 @@ const clif_check_repair = (inventory, equip) => {
 		}
 	}
 
+	console.log(sd.materials)
+
 	if (Object.keys(sd.materials).length) sd.show = true
 }
 
-const repairState = {
+export default {
+	sd,
 	start: clif_check_repair,
 	repair: clif_repair_item,
-	sd
 }
-
-export default repairState
