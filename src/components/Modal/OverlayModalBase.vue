@@ -1,7 +1,6 @@
 <template>
 	<div
 		class="modal-base"
-		@mousedown.self="$emit('close')"
 	>
 		<div
 			class="modal-content"
@@ -69,7 +68,23 @@ export default {
 
 		&.dialog {
 			width: 40vw;
-			height: 40vh;
+			height: auto;
+
+			@media only screen and (max-width: 500px) {
+				width: 80vw;
+			}
+			
+			// .modal-slot {
+			// 	display: grid;
+			// 	grid-template-columns: auto auto;
+			// 	grid-gap: 10px;
+
+			// 	input[type="number"]{
+			// 		border: none;
+			// 		padding: 10px;
+			// 		border-radius: 10px;
+			// 	}
+			// }
 		}
 
 		.modal-title {

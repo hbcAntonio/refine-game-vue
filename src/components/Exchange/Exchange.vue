@@ -57,34 +57,41 @@
 		:is-dialog="true"
 		@close="exchange.sd.selectedItem={}"
 	>
-		<ItemThumb
-			:item="exchange.sd.selectedItem"
-			:scale-on-hover="false"
-			:large="true"
-		/>
+		<ItemDetail :item="exchange.sd.selectedItem" />
 
-		<p>{{ exchange.sd.selectedItem.description }}</p>
-		<p v-if="exchange.sd.selectedItem.attribute">
-			This item is broken.
-		</p>
-
-		<form
-			novalidate
-			@submit.prevent="showBuyConfirmDialog =true"
-		>
-			<input
-				v-model="buyQty"
-				type="number"
-				:max="exchange.sd.selectedItem.qty > 9999 ? 9999 : exchange.sd.selectedItem.qty"
-				min="1"
+		<div class="exchange-buy-form">
+			<form
+				novalidate
+				@submit.prevent="showBuyConfirmDialog =true"
 			>
+				<input
+					type="button"
+					value="-"
+					:disabled="buyQty <= 1"
+					@click="buyQty -= buyQty <= 1 ? 0 : 1"
+				>
 
-			<input
-				type="submit"
-				value="Buy"
-				:disabled="buyQty > exchange.sd.selectedItem.qty || buyQty < 0 || buyQty * exchange.clif_get_exchange_price(exchange.sd.selectedItem, true) > inventory.zeny() || buyQty == 0"
-			>
-		</form>
+				<input
+					v-model="buyQty"
+					type="number"
+					:max="exchange.sd.selectedItem.qty > 9999 ? 9999 : exchange.sd.selectedItem.qty"
+					min="1"
+				>
+
+				<input
+					type="button"
+					value="+"
+					:disabled="buyQty >= exchange.sd.selectedItem.qty"
+					@click="buyQty += buyQty >= exchange.sd.selectedItem.qty ? 0 : 1"
+				>
+
+				<input
+					type="submit"
+					value="Buy"
+					:disabled="buyQty > exchange.sd.selectedItem.qty || buyQty < 0 || buyQty * exchange.clif_get_exchange_price(exchange.sd.selectedItem, true) > inventory.zeny() || buyQty == 0"
+				>
+			</form>
+		</div>
 	</OverlayModalBase>
 
 	<OverlayModalBase
@@ -93,29 +100,33 @@
 		title="Confirm"
 		@close="showBuyConfirmDialog=false"
 	>
-		<p>Are you sure you want to proceed and buy <span><strong>{{ buyQty }}x {{ exchange.sd.selectedItem.name }}</strong></span>?</p>
+		<div class="confirm-buy-dialog">
+			<p>Are you sure you want to proceed and buy <span><strong>{{ buyQty }}x {{ exchange.sd.selectedItem.name }}</strong></span>?</p>
 		
-		<input
-			type="button"
-			value="Cancel"
-		>
+			<input
+				type="button"
+				value="Cancel"
+			>
 
-		<input
-			type="button"
-			value="Purchase"
-			@keypress.enter="buyItem"
-			@click="buyItem"
-		>
+			<input
+				type="button"
+				value="Purchase"
+				class="primary"
+				@keypress.enter="buyItem"
+				@click="buyItem"
+			>
+		</div>
 	</OverlayModalBase>
 </template>
 
 <script>
 import OverlayModalBase from '../Modal/OverlayModalBase.vue'
 import ItemThumb from '../Inventory/ItemThumb.vue'
+import ItemDetail from '../Inventory/ItemDetail.vue'
 import { inject, ref, computed } from 'vue'
 
 export default {
-	components: { OverlayModalBase, ItemThumb},
+	components: { OverlayModalBase, ItemThumb, ItemDetail },
 	setup() {
 		const exchange = inject('exchange')
 		const itemviewtable = inject('itemviewtable')
@@ -152,10 +163,76 @@ export default {
 
 <style lang="scss">
 
-.what-the-fuck {
-	background: red;
-	.modal-content {
-		background: blue;
+.confirm-buy-dialog {
+	margin: 10px;
+	background: rgba(0, 0, 0, 0.295);
+	padding: 10px;
+	border-radius: 10px;
+	color: white;
+	span {
+		color: rgb(170, 204, 255);
+	}
+
+	input[type=button] {
+		border-radius: 10px;
+		border:none;
+		padding: 10px;
+		margin: 5px;
+		transition: all 0.1s ease-in;
+
+		&:hover {
+			transform:scale(1.1, 1.1)
+		}
+
+		&.primary {
+			background: linear-gradient(rgb(255, 193, 77), orange)
+		}
+	}
+}
+
+.exchange-buy-form {
+	background: rgba(0, 0, 0, 0.137);
+	border-radius: 10px;
+	padding: 10px;
+
+
+	form {
+		display: grid;
+		grid-template-columns: 40px 100px 40px auto;
+	}
+	
+
+
+	input[type="number"] {
+		border-radius: 10px;
+		padding: 10px;
+		text-align: center;
+		border: none;
+	}
+
+	input[type=number]::-webkit-inner-spin-button, 
+	input[type=number]::-webkit-outer-spin-button { 
+		-webkit-appearance: none;
+	}
+
+	input[type=button] {
+		padding: 0px;
+		border-radius: 10px;
+		font-size: 1.5rem;
+		margin: 5px;
+		border: none;
+		display: inline-block;
+	}
+
+	input[type=submit] {
+		border: none;
+		border-radius: 10px;
+		background: linear-gradient(rgb(250, 195, 94), rgb(255, 178, 11));
+		transition: all 0.1s ease-in;
+		&:hover {
+			
+			transform: scale(1.025, 1.025);
+		}
 	}
 }
 

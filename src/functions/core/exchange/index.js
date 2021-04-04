@@ -117,6 +117,8 @@ clif_add_exchange_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 15, attribute:
 clif_add_exchange_item(itemdb.ids.ELUNIUM, 1000000)
 clif_add_exchange_item(itemdb.ids.ORIDECON, 1000000)
 
+sd.selectedItem = Object.values(sd.itemlist)[0]
+
 export default {
 	sd,
 	clif_filter_exchange,

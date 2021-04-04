@@ -22,19 +22,24 @@
 		</ul>
 	</div>
 
-	<ItemDetail
+	<OverlayModalBase
 		v-if="inventory.sd.selectedItem.name"
-		:item="inventory.sd.selectedItem"
-	/>
+		:title="inventory.sd.selectedItem.name"
+		:is-dialog="true"
+		@close="inventory.sd.selectedItem={}"
+	>
+		<ItemDetail :item="inventory.sd.selectedItem" />
+	</OverlayModalBase>
 </template>
 
 <script>
 import ItemDetail from './ItemDetail.vue'
 import ItemThumb from './ItemThumb.vue'
+import OverlayModalBase from '../Modal/OverlayModalBase.vue'
 import { inject } from 'vue'
 
 export default {
-	components: { ItemDetail, ItemThumb },
+	components: { ItemDetail, ItemThumb, OverlayModalBase },
 	setup() {
 		return {
 			inventory: inject('inventory'),

@@ -1,57 +1,36 @@
 <template>
-	<div
-		class="item-detail-modal"
-		@click.self="inventory.sd.selectedItem = {}"
-	>
-		<div class="container">
-			<div class="title">
-				{{ item.name }}
-			</div>
-			<div class="content">
-				<div class="image">
-					<img :src="itemviewtable[item.resourceviewid]">
-					<span
-						v-if="item.refineCount"
-						:class="{broken:item.attribute}"
-					>+{{ item.refineCount }}</span>
-				</div>
-				<div class="description">
-					<p>{{ item.description }}</p>
-					<p v-if="item.refineCount">
-						Equipment refine: +{{ item.refineCount }}
-					</p>
+	<div class="item-detail">
+		<div class="item-image">
+			<ItemThumb
+				:item="item"
+				:scale-on-hover="false"
+				:large="true"
+			/>
+		</div>
 
-					<p
-						v-if="item.attribute"
-						class="broken"
-					>
-						This item is broken and needs to be repaired before being refined any further!
-					</p>
-					<p>Exchange price: {{ exchange.clif_get_exchange_price(item) || 0 }}Z</p>
-					<input
-						type="button"
-						value="-"
-						@click="item.refineCount--"
-					>
-					<input
-						type="button"
-						value="+"
-						@click="item.refineCount++"
-					>
-					<input
-						type="button"
-						value="!"
-						@click="item.attribute ? item.attribute = 0 : item.attribute = 1"
-					>
-				</div>
-			</div>
+		<div class="item-description">
+			<p>
+				{{ item.description }}
+			</p>
+			<p v-if="item.attribute">
+				This item is broken.
+			</p>
+		</div>
+
+
+		<div class="item-price">
+			<!-- <p>Exchange price:</p> -->
+			<div>{{ exchange.clif_get_exchange_price(item) || 0 }}</div>
 		</div>
 	</div>
 </template>
 
 <script>
 import { inject } from 'vue'
+import ItemThumb from './ItemThumb.vue'
+
 export default {
+	components: { ItemThumb },
 	props: { item: { type: Object, default: () => {} }},
 	setup() {
 		return {
@@ -64,80 +43,68 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-	.item-detail-modal {
-		background: rgba(0, 0, 0, 0.74);
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100vw;
-		height: 100vh;
-		display: grid;
-		align-items: center;
-		justify-items: center;
+.item-detail {
+	display: grid;
+	// grid-template-columns: 100px auto;
+	// grid-template-rows: auto auto;
+	grid-template-areas: 	"image desc"
+							"price price";
 
-		.container {
-			background: linear-gradient(rgb(255, 255, 255), rgb(226, 236, 255));
-			box-shadow: 0px 3px 10px 0px black;
-			color: black;
-			border-radius: 10px;
-			display: grid;
-			margin: 5px;
+	grid-template-columns: 100px auto;
+	grid-template-rows: auto auto;
+	grid-gap: 10px;
+	align-items: flex-start;
+	justify-items: stretch;
+	margin: 10px;
 
+	background: linear-gradient(rgb(6, 30, 53), rgb(28, 57, 95));
+	color: white;
+	border-radius: 10px;
+	padding: 10px;
 
-			.title {
-				background: linear-gradient(rgb(255, 185, 54), rgb(255, 176, 28));
-				padding: 10px;
-				text-align: center;
-				font-weight: 800;
-				font-size: 1.1rem;
-				text-transform: uppercase;
+	p{
+		padding: 0;
+		margin: 0;
+	}
+
+	.item-image {
+		grid-area: image;
+	}
+
+	.item-description {
+		grid-area: desc;
+	}
+
+	.item-price {
+		grid-area: price;
+
+		div {
+			position: relative;
+			padding-left: 25px;
+
+			&::before {
+				position: absolute;
+				top: -5px;
+				left: 10px;
+				content: "";
+				width: 65%;
+				height: 20px;
+				background: rgba(20, 94, 255, 0.24);
+				padding: 5px;
 				border-radius: 10px;
-				border-bottom-right-radius: 0;
-				border-bottom-left-radius: 0;
 			}
 
-			.content {
-				padding: 10px;
-				display: grid;
-				align-items: center;
-				justify-items: center;
-				.image {
-					position: relative;
-					span {
-						background: rgba(14, 98, 255, 0.507);
-						color: rgb(255, 255, 255);
-						border-radius: 10px;
-						position: absolute;
-						top: 0;
-						right: 0;
-						padding: 2px;
-					}
-
-					span.broken {
-						color: red;
-						background: rgba(255, 0, 0, 0.247);
-					}
-				}
-
-				p.broken {
-					color: rgb(196, 0, 0);
-				}
-
-				img {
-					width: 50px;
-					border: 1px solid rgba(0, 0, 0, 0.185);
-					padding: 10px;
-					border-radius: 10px;
-					box-shadow: 1px 1px 10px 0px rgba(0, 0, 0, 0.24);
-				}
-
-				p {
-					max-width: 200px;
-					text-align: center;
-					font-size: .9rem;
-				}
+			&::after {
+				position: absolute;
+				top: 0;
+				left: 0;
+				background: url("../../assets/itemviewtable/zeny-6.png") center no-repeat;
+				background-size: 20px 20px;
+				width: 20px;
+				height: 20px;
+				content: "";
 			}
 		}
 	}
-	
+}
 </style>
