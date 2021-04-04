@@ -1,5 +1,5 @@
 <template>
-	<div
+	<!-- <div
 		class="inputs"
 		style="display:grid"
 	>
@@ -20,17 +20,75 @@
 			:value="`show exchange modal: ${sd.showExchange.value}`"
 			@click="exchange.sd.show = true"
 		>
+	</div> -->
+
+	<!-- Main application -->
+	<div class="main">
+		<!-- Hollgrehen -->
+		<div class="holgrehenn-illust" />
+		
+		<!-- Options -->
+		<div class="options">
+			<ul>
+				<li>
+					<input
+						type="button"
+						value="Help"
+						class="btn btn-primary"
+						@click="showHelpModal=true"
+					>
+				</li>
+			</ul>
+		</div>
+
+		<!-- Zeny -->
+		<div class="zeny">
+			{{ inventory.zeny(undefined, false) }}
+		</div>
+
+		<!-- Game options -->
+		<div class="game-main">
+			<div class="actions">
+				<input
+					type="button"
+					class="btn btn-primary"
+					value="Refine!"
+					@click="refine.sd.show = true"
+				>
+				<input
+					type="button"
+					class="btn btn-primary"
+					value="Inventory"
+					@click="inventory.sd.show = true"
+				>
+				<input
+					type="button"
+					class="btn btn-primary"
+					value="Exchange"
+					@click="exchange.sd.show = true"
+				>
+			</div>
+		</div>
 	</div>
-	<!-- Stats -->
-	<!-- <RefineMaterialUI /> -->
+
+	<!-- Help Modal -->
+	<OverlayModalBase
+		v-if="showHelpModal"
+		title="Help"
+		:is-dialog="true"
+		@close="showHelpModal=false"
+	>
+		<p>Here's how you play the game:</p>
+	</OverlayModalBase>
+
+	<!-- Refine UI -->
+	<RefineUI v-if="sd.showRefine.value" />
 	<!-- Inventory -->
 	<Inventory v-if="sd.showInventory.value" />
 	<!-- Marketplace -->
 	<Exchange v-if="sd.showExchange.value" />
 	<!-- Repair item info modal -->
 	<RepairModal v-if="sd.showRepair.value" />
-	<!-- Refine UI -->
-	<RefineUI />
 </template>
 
 <script>
@@ -38,6 +96,7 @@ import RepairModal from './components/RefineUI/RepairModal.vue'
 import RefineUI from './components/RefineUI/RefineUI.vue'
 import Inventory from './components/Inventory/Inventory.vue'
 import Exchange from './components/Exchange/Exchange.vue'
+import OverlayModalBase from './components/Modal/OverlayModalBase.vue'
 
 import inventory from './functions/core/inventory'
 import refine from './functions/core/refine'
@@ -47,10 +106,10 @@ import exchange from './functions/core/exchange'
 import * as itemviewtable from './functions/itemviewtable'
 import globalSd from './functions/globalsd'
 
-import { provide } from 'vue'
+import { provide,ref } from 'vue'
 
 export default {
-	components: { RepairModal, RefineUI, Inventory, Exchange},
+	components: { RepairModal, RefineUI, Inventory, Exchange, OverlayModalBase},
 	setup() {
 		provide('inventory', inventory)
 		provide('refine', refine)
@@ -59,7 +118,8 @@ export default {
 		provide('exchange', exchange)
 
 		return {
-			inventory, refine, repair, exchange, sd: globalSd
+			inventory, refine, repair, exchange, sd: globalSd,
+			showHelpModal: ref(false)
 		}
 	}
 }
@@ -68,142 +128,94 @@ export default {
 <style lang="scss">
 @import "./scss/main.scss";
 
-.main-refine {
-	padding: 40px;
 
-	pre {
-		background: rgba(0, 0, 0, 0.438);
-		color: greenyellow;
-		position: fixed;
-		bottom: 0;
-		left: 0;
-		width: 100vw;
-		height: 100px;
-		overflow-y: scroll;
-	}
-	
-	font-family: Arial, Helvetica, sans-serif;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	color: #2c3e50;
+.main {
+	margin: 10px;
+	padding: 10px;
+	background: linear-gradient(rgb(1, 99, 179), rgb(1, 27, 49));
+	height: calc(100vh - 40px);
+	width: calc(100vw - 40px);
+	border-radius: 10px;
+	border: none;
+	position: relative;
 	display: grid;
-	grid-template-columns: 1fr 2fr;
-	grid-template-rows: calc(100vh - 80px);
 
-    .refine-interface {
-		background: url('./assets/holgrehenn-bg.jpg');
-        padding: 20px;
-		color: white;
-		display: grid;
-		grid-template-rows: 200px 55px auto;
+	.options {
+		ul {
+			position: absolute;
+			top: 0;
+			right: 0;
+			list-style: none;
+			padding: 0;
+			margin: 0;
+			
 
-		.selected-equip {
-			padding: 20px;
-			background: rgba(0, 0, 0, 0.315);
-			color: white;
-			border: 1px solid black;
-
-			display: grid;
-			align-items: center;
-			justify-items: center;
-
-			img {
-				width: 100px;
-				height: 100px;
-			}
-
-			.refine-count {
-				font-size: 2.25rem;
-				border: 1px solid black;
+			li {
+				display: inline-block;
 				padding: 10px;
-				background: rgba(0, 0, 0, 0.404);
-				border-radius: 50px;
-				margin: 20px;
-			}
-
-			.equip-name {
-				font-size: 1.7rem;
-			}
-
-			&__broken {
-				.equip-name {
-					color: red;
-				}
-
-				.refine-count {
-					color: red;
-				}
-
-				.img-container::before {
-					position: absolute;
-					margin-right: -100px;
-					content: '';
-					color: red;
-					width: 100px;
-					height: 100px;
-					background: rgba(255, 0, 0, 0.26);
-					z-index: -1;
-				}
-			}
-
-			align-self: center;
-			justify-self: center;
-		}
-
-		#sprite-container {
-			#sprite-image {
-				height: 194px;
-				width: 194px;
-				transform: scale(2,2);
-				background: url('./assets/successrefine.png')
-					0px 0px;
-					$time: 0.45s;
-				animation: succesrefineeffect-y $time steps(4) infinite,succesrefineeffect-x $time steps(5) infinite;
-			}
-
-			@keyframes succesrefineeffect-y {
-				0% { background-position-y: 0; }
-				100% { background-position-y: -768px; }
-			}
-
-			@keyframes succesrefineeffect-x {
-				0% { background-position-x: 0; }
-				100% { background-position-x: -960px; }
 			}
 		}
+	}
 
+	.zeny {
+		position: absolute;
+		font-size: 1.2rem;
+		font-weight: bolder;
+		padding: 10px;
+		width: 250px;
+		background: rgba(0, 0, 0, 0.548);
+		color: white;
+		margin: 10px;
+		border-radius: 10px;
 
+		&::after {
+			position: absolute;
+			background: url("./assets/itemviewtable/zeny-6.png") center no-repeat;
+			background-size: 25px 25px;
+			width: 25px;
+			height: 25px;
+			right: 10px;
+			content: "";
+		}
+	}
+
+	.holgrehenn-illust {
+		background: url("https://scontent.fymy1-2.fna.fbcdn.net/v/t1.0-9/s720x720/151666977_2795429900698644_7897028221993273984_o.jpg?_nc_cat=111&ccb=1-3&_nc_sid=110474&_nc_ohc=JOtlPMVLdSEAX_lYRIP&_nc_ht=scontent.fymy1-2.fna&tp=7&oh=c8cb17c97eff48ac2eb86a75d87d2cb4&oe=606D4631") no-repeat center;
+		background-blend-mode: multiply;
+		background-size: auto 100%;
+		border-radius: 10px;
+		box-shadow: 0 -5px 10px 0px rgba(0, 0, 0, 0.39);
+		height: 600px;
+		width: 100%;
+		bottom: 0;
+		position: absolute;
+		// img {
+		// 	position: absolute;
+		// 	left: -50%;
+		// 	top: -10px;
+		// 	height: 100vh;
+		// 	mix-blend-mode: multiply;
+		// }
+	}
+
+	.game-main {
+		position: absolute;
+		background: rgba(0, 0, 0, 0.384);
+		border-radius: 10px;
+		top: 68px;
+		height: calc(100% - 68px);
+		width: calc(100% - 40px);
+		padding: 20px;
+		display: grid;
+		align-items: center;
+		justify-content: center;
 		
-
-		.refine-btn {
-			transition: all 0.05s ease-in;
-			padding: 10px;
-			border: 1px solid rgb(119, 119, 119);
-			background: orange;
-			border-radius: 10px;
-			font-size: 1.2rem;
-			margin-top: 10px;
-			justify-self: right;
-			width: 120px;
-
-			&:hover{
-				transform: scale(1.05,1.05);
-			}
-		}
-
-		.dialog {
-			background: white;
-			color: black;
-			padding: 20px;
-			border-radius: 20px;
-			border: 2px solid rgb(172, 172, 172);
-			font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-			font-size: 2rem;
-
+		.actions {
 			display: grid;
+			grid-gap: 10px;
 			align-items: center;
-			justify-items: center;
+			min-width: 250px;
 		}
-    }
+	}
 }
 </style>

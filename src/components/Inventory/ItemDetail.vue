@@ -18,7 +18,10 @@
 		</div>
 
 
-		<div class="item-price">
+		<div
+			v-if="!item.currency"
+			class="item-price"
+		>
 			<!-- <p>Exchange price:</p> -->
 			<div>{{ exchange.clif_get_exchange_price(item) || 0 }}</div>
 		</div>

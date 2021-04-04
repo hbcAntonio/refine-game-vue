@@ -29,6 +29,38 @@
 		@close="inventory.sd.selectedItem={}"
 	>
 		<ItemDetail :item="inventory.sd.selectedItem" />
+
+		<!-- Selling -->
+		<input
+			v-if="!inventory.sd.selectedItem.currency"
+			type="button"
+			value="Sell"
+			class="btn btn-primary btn-sell"
+			@click="showSellConfirmDialog=true"
+		>
+	</OverlayModalBase>
+
+	<OverlayModalBase
+		v-if="showSellConfirmDialog"
+		:is-dialog="true"
+		title="Confirm"
+		@close="showSellConfirmDialog=false"
+	>
+		<div class="confirm-sell-dialog">
+			<p>Are you sure you want to sell <span>{{ inventory.sd.selectedItem.name }} x1</span>?</p>
+			<input
+				type="button"
+				value="Cancel"
+				class="btn btn-cancel"
+				@click="showSellConfirmDialog=false"
+			>
+			<input
+				type="button"
+				value="Sell"
+				class="btn btn-primary"
+				@click="sellItem"
+			>
+		</div>
 	</OverlayModalBase>
 </template>
 
@@ -36,7 +68,7 @@
 import ItemDetail from './ItemDetail.vue'
 import ItemThumb from './ItemThumb.vue'
 import OverlayModalBase from '../Modal/OverlayModalBase.vue'
-import { inject } from 'vue'
+import { inject, ref } from 'vue'
 
 export default {
 	components: { ItemDetail, ItemThumb, OverlayModalBase },
@@ -44,6 +76,13 @@ export default {
 		return {
 			inventory: inject('inventory'),
 			itemviewtable: inject('itemviewtable'),
+			showSellConfirmDialog: ref(false)
+		}
+	},
+	methods: {
+		sellItem() {
+			this.inventory.sellItem()
+			this.showSellConfirmDialog = false
 		}
 	}
 }
@@ -51,6 +90,19 @@ export default {
 
 <style lang="scss" scoped>
 
+.confirm-sell-dialog {
+	padding: 10px;
+	margin: 10px;
+	background: rgba(0, 0, 0, 0.514);
+	border-radius: 10px;
+	display: grid;
+	color: white;
+	grid-gap: 10px;
+
+	span {
+		color: rgb(102, 199, 255);
+	}
+}
 	.inventory-modal {
 		font-family: 'Noto Sans JP', sans-serif;
 		background: rgba(0, 0, 0, 0.644);

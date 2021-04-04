@@ -19,6 +19,7 @@ export default {
 		}
 	}),
 
-	showInventory: computed(() => inventory.sd.show,),
-	showExchange: computed(() => exchange.sd.show,)
+	showInventory: computed(() => inventory.sd.show),
+	showExchange: computed(() => exchange.sd.show),
+	showRefine: computed(() => refine.sd.show)
 }

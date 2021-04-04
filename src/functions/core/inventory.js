@@ -1,9 +1,11 @@
 import { reactive } from 'vue'
+import exchange from './exchange'
 import * as itemdb from './itemdb'
 
 const itemlist = reactive({})
 const sd = reactive({
-	show: true,
+	show: false,
+	canShow: true,
 	selectedItem: {}
 })
 
@@ -70,20 +72,31 @@ const clif_del_item = (nameid='oridecon', qty=1) => {
 	})
 }
 
+const clif_del_uid_item = (uid, qty=1) => {
+	itemlist[uid].qty -= qty
+	if (itemlist[uid].qty <= 0) delete itemlist[uid]
+}
+
 const clif_del_zeny = (qty=1) => {
 	clif_del_item('zeny', qty)
 }
 
+const clif_sell_item = () => {
+	clif_del_uid_item(sd.selectedItem.uid)
+	clif_add_item(itemdb.ids.ZENY, exchange.clif_get_exchange_price(sd.selectedItem, true))
+	sd.selectedItem = {}
+}
+
 // Default items
 clif_add_item(itemdb.ids.ZENY, 25344562)
-clif_add_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 7, attribute: 1})
-clif_add_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 4, attribute: 0})
-clif_add_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 15, attribute: 0})
-clif_add_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 3, attribute: 0})
-clif_add_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 4, attribute: 0})
-clif_add_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 9, attribute: 0})
-clif_add_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 15, attribute: 0})
-//clif_add_item(itemdb.ids.ELUNIUM, 100)
+clif_add_item(itemdb.ids.ANCIENT_CAPE, 12, {refineCount: 3, attribute: 1})
+// clif_add_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 4, attribute: 0})
+// clif_add_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 15, attribute: 0})
+// clif_add_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 3, attribute: 0})
+// clif_add_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 4, attribute: 0})
+// clif_add_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 9, attribute: 0})
+// clif_add_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 15, attribute: 0})
+clif_add_item(itemdb.ids.ELUNIUM, 100)
 clif_add_item(itemdb.ids.ORIDECON, 100)
 
 export default {
@@ -94,5 +107,6 @@ export default {
 	delItem: clif_del_item,
 	itemInfo: clif_get_item_info,
 	zeny: clif_find_currency,
-	delZeny: clif_del_zeny
+	delZeny: clif_del_zeny,
+	sellItem: clif_sell_item
 }

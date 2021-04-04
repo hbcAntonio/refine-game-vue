@@ -1,63 +1,98 @@
 <template>
-	<div class="repair-modal">
-		<div class="modal-content">
-			<input
-				type="button"
-				value="close"
-				class="close"
-				@click="repair.sd.show = false"
-			>
+	<OverlayModalBase
+		title="Choose an item"
+		:is-dialog="true"
+		@close="repair.sd.show = false"
+	>
+		<div class="repair-modal">
 			<ul>
 				<li
 					v-for="material in repair.sd.materials"
 					:key="material.nameid"
 				>
-					+{{ material.refineCount }} {{ material.name }}
-					<input
-						type="button"
-						value="use"
-						@click="repair.repair(material, refine.sd.equip, inventory)"
-					>
+					<ItemThumb
+						:item="material"
+						@click="confirm(material)"
+					/>
 				</li>
 			</ul>
 		</div>
-	</div>
+	</OverlayModalBase>
+
+	<OverlayModalBase
+		v-if="showConfirmDialog"
+		title="Are you sure?"
+		:is-dialog="true"
+		@close="showConfirmDialog=false"
+	>
+		<div class="confirm">
+			<p>Are you sure you would like to use this item as a material?</p>
+			<input
+				type="button"
+				class="btn btn-cancel"
+				value="Cancel"
+			>
+			<input
+				type="button"
+				class="btn btn-primary"
+				value="Use this item"
+				@click="repairItem"
+			>
+		</div>
+	</OverlayModalBase>
 </template>
 
 <script>
-import { inject } from 'vue'
+import OverlayModalBase from '../Modal/OverlayModalBase.vue'
+import ItemThumb from '../Inventory/ItemThumb.vue'
+import { inject, ref } from 'vue'
 
 export default {
+	components: { ItemThumb, OverlayModalBase },
 	setup() {
 		const repair = inject('repair')
 		const refine = inject('refine')
 		const inventory = inject('inventory')
 
-		return { repair, refine, inventory}
-	}
+		const showConfirmDialog = ref(false)
+		let selectedMat = {}
+
+		const confirm = (mat) => {
+			showConfirmDialog.value = true
+			selectedMat = mat
+		}
+
+		const repairItem = () => {
+			repair.repair(selectedMat, refine.sd.equip, inventory)
+			showConfirmDialog.value = false
+		}
+
+		return { repair, refine, inventory, confirm, repairItem, showConfirmDialog}
+	},
 }
 </script>
 
 <style lang="scss" scoped>
 .repair-modal {
-	height: 100vh;
-	width: 100vw;
 	display: grid;
 	align-items: center;
 	justify-items: center;
-	position: absolute;
-	top: 0;
-	left: 0;
-	background: rgba(0, 0, 0, 0.801);
+	margin: 10px;
+	ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
 
-	.modal-content {
-        display: grid;
-        grid-template-rows: 50px auto;
-		background: linear-gradient(rgb(58, 143, 255), rgb(0, 110, 255));
-		border: 1px solid rgba(0, 0, 0, 0.589);
-		border-radius: 20px;
-		width: 500px;
-		height: 400px;
+		display: grid;
+		grid-template-columns: repeat(5, 50px);
+	}
+}
+
+.confirm {
+	padding: 10px;
+
+	input {
+		margin-right: 10px;
 	}
 }
 </style>

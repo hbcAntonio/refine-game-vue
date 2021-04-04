@@ -48,7 +48,7 @@ export default {
 		position: relative;
 		width: 80vw;
 		height: 80vh;
-		background: linear-gradient(rgb(12, 109, 255), rgb(65, 147, 255));
+		background: linear-gradient(rgb(8, 177, 255), rgb(15, 120, 180));
 		border-radius: 10px;
 
 		.close {

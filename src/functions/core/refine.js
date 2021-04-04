@@ -14,17 +14,22 @@ const DIALOG_MAP = {
 	FAILURE_REFINE: 'Oh no... I swear I will try to do better next time!',
 	BREAK_REFINE: 'I... don\'t even know what to say!!!',
 	IDLE: 'My name is Holgrehenn, and I hate you!',
+	IDLE_BROKEN: 'This item is broken, I will need to repair it first...',
 	REFINING: 'Here we go...',
 	BUSY: 'I happen to be busy already....',
 	BROKEN: 'I cannot refine broken items...',
-	MISSING_ORIDECON: 'I need an Oridecon to refine this item...',
-	MISSING_ZENY: 'You can\'t expect me to do this for free!'
+	MISSING_ZENY: 'You don\'t have enough Zeny...',
+	MISSING_MATERIAL: {
+		oridecon: 'I need an Oridecon to refine this item...',
+		elunium: 'I need an Elunium to refine this item...'
+	}
 }
 
 const sd = reactive({
 	refining: false,
 	dialog: 'Hello, which equipment would you like to refine today?',
-	equip: {}
+	equip: {},
+	show: false
 })
 
 
@@ -65,9 +70,9 @@ const clif_refine_get_reqs = () => {
 }
 
 const clif_refine_check_requirements = (inventory) => {
-	const { zeny, mat } = clif_refine_get_reqs
+	const { zeny, mat } = clif_refine_get_reqs()
 
-	if (inventory.findItem(mat).length <= 0) sd.dialog = DIALOG_MAP.MISSING_MATERIAL
+	if (inventory.findItem(mat).length <= 0) sd.dialog = DIALOG_MAP.MISSING_MATERIAL[mat]
 	if (inventory.zeny() <= zeny) sd.dialog = DIALOG_MAP.MISSING_ZENY
 
 	if (sd.dialog) return false
@@ -82,6 +87,7 @@ const clif_refine_check_requirements = (inventory) => {
 
 const setEquip = (equip) => {
 	sd.equip = equip
+	sd.dialog = equip.attribute ? DIALOG_MAP.IDLE_BROKEN : DIALOG_MAP.IDLE
 }
 
 

@@ -4,14 +4,35 @@
 body {
 	overflow: hidden;
 	font-family: 'Noto Sans JP', sans-serif;
+	background: linear-gradient(rgb(36, 156, 255), rgb(0, 133, 241));
 }
 
 .btn {
-	padding: 5px;
+	padding: 10px;
 	background: none;
-	color: rgb(35, 123, 255);
 	border: none;
 	text-transform: capitalize;
-	border: 1px solid rgb(35, 123, 255);
 	border-radius: 10px;
+	transition: all 0.1s ease-in;
+
+	&:hover{
+		transform: scale(1.05, 1.05);
+	}
+
+	&.btn-primary {
+		background: linear-gradient(rgb(255, 189, 65), orange);
+	}
+
+	&.btn-secondary {
+		background: linear-gradient(rgb(255, 189, 65), orange);
+	}
+
+	&.btn-cancel {
+		background: linear-gradient(white, rgb(230, 230, 230));
+	}
+
+	&.btn-sell {
+		width: 50%;
+		margin: 10px;
+	}
 }
