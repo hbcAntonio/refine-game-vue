@@ -13,19 +13,19 @@ const clif_repair_item = (material, equip, inventory) => {
 }
 
 const clif_check_repair = (inventory, equip) => {
-	console.log('clif_check_repair', inventory.itemlist)
 	sd.materials = {}
     
 	for (let key in inventory.itemlist) {
 		const ref = inventory.itemlist[key]
 
 		// Same type but not the same equipment
-		if (ref.uid !== equip.uid && ref.nameid === equip.nameid) {
-			sd.materials[key] = ref
-		}
-	}
+		// Also no equipment above +5
+		if (ref.uid === equip.uid) continue
+		if (ref.refineCount > 5) continue
+		if (ref.nameid !== equip.nameid) continue
 
-	console.log(sd.materials)
+		sd.materials[key] = ref
+	}
 
 	if (Object.keys(sd.materials).length) sd.show = true
 }

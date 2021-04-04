@@ -40,7 +40,6 @@ export default {
 
 <style lang="scss" scoped>
 .repair-modal {
-    color:white;
 	height: 100vh;
 	width: 100vw;
 	display: grid;
@@ -49,18 +48,12 @@ export default {
 	position: absolute;
 	top: 0;
 	left: 0;
+	background: rgba(0, 0, 0, 0.801);
 
 	.modal-content {
         display: grid;
         grid-template-rows: 50px auto;
-
-        .close {
-            justify-self: right;
-            height: 50px;
-        }
-
-		z-index: 10;
-		background: rgba(0, 0, 0, 0.589);
+		background: linear-gradient(rgb(58, 143, 255), rgb(0, 110, 255));
 		border: 1px solid rgba(0, 0, 0, 0.589);
 		border-radius: 20px;
 		width: 500px;

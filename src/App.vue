@@ -12,36 +12,37 @@
 		<input
 			type="button"
 			:value="`show inventory modal: ${sd.showInventory.value}`"
-			@click="sd.showInventory.value = true"
+			@click="inventory.sd.show = true"
+		>
+
+		<input
+			type="button"
+			:value="`show exchange modal: ${sd.showExchange.value}`"
+			@click="exchange.sd.show = true"
 		>
 	</div>
-
-	<RepairModal v-if="sd.showRepair.value" />
-
-	<Inventory
-		v-if="sd.showInventory.value"
-	/>
-
-	<RefineMaterialUI />
-
 	<!-- Stats -->
+	<!-- <RefineMaterialUI /> -->
+	<!-- Inventory -->
+	<Inventory v-if="sd.showInventory.value" />
 	<!-- Marketplace -->
-	<!-- Item info modal -->
+	<Exchange v-if="sd.showExchange.value" />
 	<!-- Repair item info modal -->
+	<RepairModal v-if="sd.showRepair.value" />
 	<!-- Refine UI -->
-
 	<RefineUI />
 </template>
 
 <script>
-import RepairModal from './components/RepairModal.vue'
-import RefineMaterialUI from './components/RefineUI/RefineMaterialUI.vue'
+import RepairModal from './components/RefineUI/RepairModal.vue'
 import RefineUI from './components/RefineUI/RefineUI.vue'
 import Inventory from './components/Inventory/Inventory.vue'
+import Exchange from './components/Exchange/Exchange.vue'
 
 import inventory from './functions/core/inventory'
 import refine from './functions/core/refine'
 import repair from './functions/core/repair'
+import exchange from './functions/core/exchange'
 
 import * as itemviewtable from './functions/itemviewtable'
 import globalSd from './functions/globalsd'
@@ -49,15 +50,16 @@ import globalSd from './functions/globalsd'
 import { provide } from 'vue'
 
 export default {
-	components: { RepairModal, RefineMaterialUI, RefineUI, Inventory},
+	components: { RepairModal, RefineUI, Inventory, Exchange},
 	setup() {
 		provide('inventory', inventory)
 		provide('refine', refine)
 		provide('repair', repair)
 		provide('itemviewtable', itemviewtable)
+		provide('exchange', exchange)
 
 		return {
-			inventory, refine, repair, sd: globalSd
+			inventory, refine, repair, exchange, sd: globalSd
 		}
 	}
 }
@@ -132,14 +134,15 @@ export default {
 					color: red;
 				}
 
-				.img-container::after {
+				.img-container::before {
 					position: absolute;
-					margin-left: -100px;
-					content: 'BROKEN';
+					margin-right: -100px;
+					content: '';
 					color: red;
 					width: 100px;
 					height: 100px;
 					background: rgba(255, 0, 0, 0.26);
+					z-index: -1;
 				}
 			}
 
@@ -148,8 +151,6 @@ export default {
 		}
 
 		#sprite-container {
-			z-index: 100;
-
 			#sprite-image {
 				height: 194px;
 				width: 194px;

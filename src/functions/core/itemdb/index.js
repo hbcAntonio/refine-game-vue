@@ -5,16 +5,11 @@ const clif_instantiate_item = (id, qty=1, options={}) => {
 	const ref = db[id]
 	const result = {}
 
-	if (!ref) {
-		console.log('This item does not exist:', id)
-		return
-	}
+	if (!ref) return
 
-	
-
-	if (!ref.stackable) {
+	if (!ref.stackable && !options.stackable) {
 		// eslint-disable-next-line no-unused-vars
-		Array.from(Array(qty)).forEach(i => {
+		Array.from(Array(parseInt(qty))).forEach(i => {
 			const newid = nanoid()
 			result[newid] = { ...ref, qty: 1, refineCount: 0, uid: newid, nameid: id}
 			if (options) result[newid] = { ...result[newid], ...options}

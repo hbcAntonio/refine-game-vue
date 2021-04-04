@@ -1,7 +1,9 @@
 import { computed } from 'vue'
+
 import repair from './core/repair'
 import inventory from './core/inventory'
 import refine from './core/refine'
+import exchange from './core/exchange'
 
 export default {
 	showRepair: computed({
@@ -17,8 +19,6 @@ export default {
 		}
 	}),
 
-	showInventory: computed({
-		get: () => inventory.sd.show,
-		set: (value) => inventory.sd.show = value
-	})
+	showInventory: computed(() => inventory.sd.show,),
+	showExchange: computed(() => exchange.sd.show,)
 }

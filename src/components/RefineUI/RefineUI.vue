@@ -22,7 +22,7 @@
 			/>
 
 			<!-- <div id="sprite-container">
-			<div id="sprite-image" />
+				<div id="sprite-image" />
 			</div> -->
 		</div>
 	</div>
@@ -47,7 +47,7 @@ export default {
 			refine,
 			repair
 		}
-	}
+	},
 }
 
 </script>
