@@ -5,10 +5,12 @@
 			<li
 				v-for="equip in refinable"
 				:key="equip.nameid"
-				:class="{broken:equip.attribute}"
+				:class="{broken:equip.attribute, same:equip.uid===uid}"
 				@click="$emit('select-equip', equip)"
 			>
-				<ItemThumb :item="equip" />
+				<ItemThumb
+					:item="equip"
+				/>
 				<div>{{ equip.name }}</div>
 			</li>
 		</ul>
@@ -23,7 +25,10 @@ const MAX_REFINE = 15
 
 export default {
 	components: { ItemThumb},
-	props: { inventory: { type: Object, default: () => {} } },
+	props: { 
+		inventory: { type: Object, default: () => {} },
+		uid: { type: String, default: '' }
+	},
 	emits: ['select-equip'],
 
 	setup(props) {
@@ -45,6 +50,11 @@ export default {
 
 <style lang="scss">
 .equip-list {
+
+	.same {
+		background: linear-gradient(rgb(208, 172, 255), rgb(149, 142, 255));
+	}
+
     ul {
         list-style: none;
         padding: 0;

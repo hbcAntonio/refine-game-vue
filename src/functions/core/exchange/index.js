@@ -109,11 +109,12 @@ const clif_buy_item = (qty=1) => {
 
 clif_add_exchange_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 3, attribute: 1, stackable: true, qty: 12})
 clif_add_exchange_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 4, attribute: 0})
-clif_add_exchange_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 15, attribute: 0})
-clif_add_exchange_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 3, attribute: 0})
+clif_add_exchange_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 3, attribute: 0, stackable: true, qty: 12})
 clif_add_exchange_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 4, attribute: 0})
 clif_add_exchange_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 9, attribute: 0})
-clif_add_exchange_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 15, attribute: 0})
+clif_add_exchange_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 12, attribute: 0})
+clif_add_exchange_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 0, attribute: 0, stackable: true, qty: 112})
+clif_add_exchange_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 0, attribute: 0, stackable: true, qty: 179})
 clif_add_exchange_item(itemdb.ids.ELUNIUM, 1000000)
 clif_add_exchange_item(itemdb.ids.ORIDECON, 1000000)
 

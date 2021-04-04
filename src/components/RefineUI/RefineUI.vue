@@ -6,6 +6,7 @@
 		<div class="main-refine">
 			<RefinableEquipList
 				:inventory="inventory"
+				:uid="refine.sd.equip.uid"
 				@select-equip="refine.setEquip"
 			/>
 

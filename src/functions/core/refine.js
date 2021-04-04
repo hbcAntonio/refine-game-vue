@@ -1,18 +1,33 @@
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import inventoryState from './inventory'
 
 const MAX_REFINE = 15
 const MIN_REFINE = 0
 const REFINE_TIME = 625
-const SUCCESS_RATE = .35
+const SUCCESS_RATE_MIN = .45
+const SUCCESS_RATE_MAX = .7
 const BREAK_RATE = .5
 const ZENY_FIXED_REQ = 10000
 
+const clif_get_random_range = (MIN=0, MAX=1) => {
+	const DELTA = MAX-MIN
+	const init = Math.random()
+	const mult =  init * DELTA
+	return mult + MIN
+}
+
+let SUCCESS_RATE = ref(clif_get_random_range(SUCCESS_RATE_MIN, SUCCESS_RATE_MAX))
+setInterval(() => {
+	
+	SUCCESS_RATE.value = clif_get_random_range(SUCCESS_RATE_MIN, SUCCESS_RATE_MAX)
+	console.log('changing success-rate to', SUCCESS_RATE.value)
+}, clif_get_random_range(60000*1, 60000*3))
+
 const DIALOG_MAP = {
 	EMPTY_SLOT: 'Should I refine your body then?!',
-	SUCCESS_REFINE: 'Splendid job I did! So happy for you!',
-	FAILURE_REFINE: 'Oh no... I swear I will try to do better next time!',
-	BREAK_REFINE: 'I... don\'t even know what to say!!!',
+	SUCCESS_REFINE: 'Splendid job I did! So happy for you! (Your item was refined successfully!)',
+	FAILURE_REFINE: 'Oh no... I swear I will try to do better next time! (Your item lost one level of refinement)',
+	BREAK_REFINE: 'I... don\'t even know what to say!!! (Your item broke!)',
 	IDLE: 'My name is Holgrehenn, and I hate you!',
 	IDLE_BROKEN: 'This item is broken, I will need to repair it first...',
 	REFINING: 'Here we go...',
@@ -42,7 +57,8 @@ const clif_refine_sub = (equip, success) => {
 	return success
 }
 
-const clif_refine = (equip, rate=SUCCESS_RATE, breakRate=BREAK_RATE) => {
+const clif_refine = (equip, rate, breakRate=BREAK_RATE) => {
+	if (!rate) rate = SUCCESS_RATE.value
 	if (equip.attribute) return false
 
 	if (!clif_refine_sub(equip, Math.random() < rate)) {
@@ -116,6 +132,7 @@ const start = async (inventory=inventoryState) => {
 
 const refineState = {
 	sd,
+	SUCCESS_RATE,
 	setEquip,
 	start,
 	getReqs: clif_refine_get_reqs
