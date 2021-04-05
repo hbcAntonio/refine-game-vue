@@ -238,7 +238,7 @@ export default {
 
 .exchange-header {
 	padding: 10px;
-	background: white;
+	background: linear-gradient(white, rgb(224, 224, 224));
 	border-radius: 10px;
 	margin: 10px;
 	//height: 12vh;
@@ -365,6 +365,24 @@ ul.exchange-itemlist {
 				grid-area: name;
 			}
 		}
+	}
+}
+
+@media screen and (max-width: 700px) {
+	.exchange-header {
+		grid-template-columns: auto;
+		grid-gap: 10px;
+		.exchange-search {
+			input[type=text] {
+				width: calc(100% - 12px - 35px);
+				padding: 5px;
+				padding-left: 35px;
+			}
+		}
+	}
+
+	ul.exchange-itemlist {
+		grid-template-columns: auto;
 	}
 }
 </style>

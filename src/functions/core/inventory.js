@@ -1,9 +1,16 @@
 import { reactive } from 'vue'
 import exchange from './exchange'
 import * as itemdb from './itemdb'
+import message from './message'
 
-const itemlist = reactive({})
-const sd = reactive({
+let saved = {}
+
+if (localStorage.getItem('inventory')) {
+	saved = JSON.parse(localStorage.getItem('inventory'))
+}
+
+const itemlist = reactive(saved.itemlist || {})
+const sd = reactive(saved.sd || {
 	show: false,
 	canShow: true,
 	selectedItem: {}
@@ -65,10 +72,12 @@ const clif_add_item = (id='ancient-cape', qty=1, options={}) => {
 }
 
 const clif_del_item = (nameid='oridecon', qty=1) => {
+	
 	Object.values(itemlist).filter(item => nameid === item.nameid).forEach(item => {
 		if (item.stackable) item.qty -= qty
 		if ((item.qty <= 0 || !item.stackable) && !item.currency) delete itemlist[item.uid]
 		if (item.currency) item.qty = item.qty <= 0 ? 0 : item.qty
+		// message.clif_add_message(`Cost ${item.name} x${qty}`,1000)
 	})
 }
 
@@ -78,26 +87,38 @@ const clif_del_uid_item = (uid, qty=1) => {
 }
 
 const clif_del_zeny = (qty=1) => {
+	message.clif_add_message(`Cost ${qty} Zeny!`,1000)
 	clif_del_item('zeny', qty)
 }
 
 const clif_sell_item = () => {
 	clif_del_uid_item(sd.selectedItem.uid)
 	clif_add_item(itemdb.ids.ZENY, exchange.clif_get_exchange_price(sd.selectedItem, true))
+	message.clif_add_message(`Get ${exchange.clif_get_exchange_price(sd.selectedItem, false)} Zeny!`,1000)
+	message.clif_add_message(`Sold <span style="color: orange;">${sd.selectedItem.refineCount ? `+${sd.selectedItem.refineCount}` : ''} ${sd.selectedItem.name}<span>`,1000)
 	sd.selectedItem = {}
+	
 }
 
 // Default items
-clif_add_item(itemdb.ids.ZENY, 25344562)
-clif_add_item(itemdb.ids.ANCIENT_CAPE, 5, {refineCount: 4, attribute: 0})
-// clif_add_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 4, attribute: 0})
-// clif_add_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 15, attribute: 0})
-// clif_add_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 3, attribute: 0})
-// clif_add_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 4, attribute: 0})
-// clif_add_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 9, attribute: 0})
-clif_add_item(itemdb.ids.CRITICAL_RING, 5, {refineCount: 4, attribute: 0})
-clif_add_item(itemdb.ids.ELUNIUM, 100)
-clif_add_item(itemdb.ids.ORIDECON, 100)
+if (Object.values(itemlist).length <= 0) {
+	clif_add_item(itemdb.ids.ZENY, 25344562)
+	clif_add_item(itemdb.ids.ANCIENT_CAPE, 5, {refineCount: 4, attribute: 0})
+	// clif_add_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 4, attribute: 0})
+	// clif_add_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 15, attribute: 0})
+	// clif_add_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 3, attribute: 0})
+	// clif_add_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 4, attribute: 0})
+	// clif_add_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 9, attribute: 0})
+	clif_add_item(itemdb.ids.CRITICAL_RING, 5, {refineCount: 4, attribute: 0})
+	clif_add_item(itemdb.ids.ELUNIUM, 100)
+	clif_add_item(itemdb.ids.ORIDECON, 100)
+}
+
+
+// Saving
+setInterval(() => {
+	localStorage.setItem('inventory', JSON.stringify({ itemlist, sd }))
+}, 5000)
 
 export default {
 	itemlist, // separate from state descriptor -- unity them? TODO:

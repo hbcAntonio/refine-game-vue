@@ -61,6 +61,12 @@ export default {
 	grid-template-rows: 100%;
 	padding: 10px;
 
+	@media screen and (max-width: 700px) {
+		grid-template-columns: 1fr;
+		grid-template-rows: 1fr 2fr;
+		grid-gap: 10px;
+	}
+
     .refine-interface {
 		background: url('../../assets/holgrehenn-bg.jpg') center bottom no-repeat;
 		background-size: 100% auto;
@@ -72,6 +78,14 @@ export default {
 		display: grid;
 		grid-template-rows: 1fr 3fr 50px;
 		grid-gap: 5px;
+
+		@media screen and (max-width: 700px) {
+			grid-template-columns: 1fr;
+			grid-template-rows: auto auto auto;
+			max-height: 360px;
+
+			background-position: 0 -130px;
+		}
 
 		#sprite-container {
 			#sprite-image {
@@ -112,7 +126,7 @@ export default {
 		}
 
 		// .dialog {
-		// 	background: white;
+		// 	background: linear-gradient(white, rgb(224, 224, 224));
 		// 	color: black;
 		// 	padding: 20px;
 		// 	border-radius: 20px;

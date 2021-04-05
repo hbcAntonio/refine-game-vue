@@ -1,11 +1,12 @@
 import { reactive, ref } from 'vue'
 import inventoryState from './inventory'
+import message from './message'
 
 const MAX_REFINE = 15
 const MIN_REFINE = 0
 const REFINE_TIME = 625
-const SUCCESS_RATE_MIN = .45
-const SUCCESS_RATE_MAX = .7
+const SUCCESS_RATE_MIN = .4
+const SUCCESS_RATE_MAX = .6
 const BREAK_RATE = .5
 const ZENY_FIXED_REQ = 10000
 
@@ -18,7 +19,6 @@ const clif_get_random_range = (MIN=0, MAX=1) => {
 
 let SUCCESS_RATE = ref(clif_get_random_range(SUCCESS_RATE_MIN, SUCCESS_RATE_MAX))
 setInterval(() => {
-	
 	SUCCESS_RATE.value = clif_get_random_range(SUCCESS_RATE_MIN, SUCCESS_RATE_MAX)
 	console.log('changing success-rate to', SUCCESS_RATE.value)
 }, clif_get_random_range(60000*1, 60000*3))
@@ -99,8 +99,6 @@ const clif_refine_check_requirements = (inventory) => {
 	return true
 }
 
-
-
 const setEquip = (equip) => {
 	sd.equip = equip
 	sd.dialog = equip.attribute ? DIALOG_MAP.IDLE_BROKEN : DIALOG_MAP.IDLE
@@ -119,11 +117,17 @@ const start = async (inventory=inventoryState) => {
 	await new Promise(resolve => setTimeout(() => {
 		if (clif_refine(sd.equip)) {
 			sd.dialog = DIALOG_MAP.SUCCESS_REFINE
+			message.clif_add_message('<strong style="color: limegreen;">Success!</strong>', 1000)
+			if (sd.equip.refineCount === 15) {
+				sd.equip = {}
+				setTimeout(() => message.clif_add_message('<strong style="color: limegreen;">+15 Achieved!</strong>', 1000), 1000)
+			}
 			resolve()
 			return
 		}
 
 		sd.dialog = sd.equip.attribute ? DIALOG_MAP.BREAK_REFINE : DIALOG_MAP.FAILURE_REFINE
+		message.clif_add_message(`<strong style="color: ${sd.equip.attribute ? 'red' : 'orange'};">${sd.equip.attribute ? 'Broken' : 'Failure'}!</strong>`, 1000)
 		resolve()
 	}, REFINE_TIME))
 

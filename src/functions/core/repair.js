@@ -1,4 +1,5 @@
 import { reactive } from 'vue'
+import message from './message'
 
 // State descriptor
 const sd = reactive({
@@ -10,6 +11,7 @@ const clif_repair_item = (material, equip, inventory) => {
 	delete inventory.itemlist[material.uid]
 	equip.attribute = 0
 	sd.show=false
+	message.clif_add_message('<strong style="color: lightblue;">Repaired!</style>', 2000)
 }
 
 const clif_check_repair = (inventory, equip) => {

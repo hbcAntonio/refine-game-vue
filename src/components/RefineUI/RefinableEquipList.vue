@@ -1,7 +1,9 @@
 <template>
 	<div class="equip-list">
 		<ul>
-			Please select an item to refine. Max refine is +15. Have fun!
+			<span class="callout">
+				Please select an item to refine. Max refine is +15. Have fun!
+			</span>
 			<li
 				v-for="equip in refinable"
 				:key="equip.nameid"
@@ -67,6 +69,15 @@ export default {
         border-radius: 10px;
         color: white;
         max-height: 470px;
+
+		@media screen and (max-width: 700px) {
+			grid-template-columns: repeat(2, auto);
+			max-height: 200px;
+
+			.callout {
+				display: none;
+			}
+		}
 
         li {
             display: grid;

@@ -51,6 +51,11 @@ export default {
 		background: linear-gradient(rgb(8, 177, 255), rgb(15, 120, 180));
 		border-radius: 10px;
 
+		@media screen and (max-width: 700px) {
+			height: 100vh;
+			width: 95vw;
+		}
+
 		.close {
 			content: "x";
 			position: absolute;

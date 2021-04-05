@@ -53,7 +53,7 @@
 					type="button"
 					class="btn btn-primary"
 					value="Refine!"
-					@click="refine.sd.show = true"
+					@click="() => refine.sd.show = true"
 				>
 				<input
 					type="button"
@@ -104,6 +104,22 @@
 	<Exchange v-if="sd.showExchange.value" />
 	<!-- Repair item info modal -->
 	<RepairModal v-if="sd.showRepair.value" />
+
+	<!-- Messaging system-->
+	<div
+		v-if="Object.values(message.sd.messages).length > 0"
+		class="messaging"
+	>
+		<div class="container">
+			<div
+				v-for="(message, index) in message.sd.messages"
+				:id="index"
+				:key="index"
+				class="message"
+				v-html="message"
+			/>
+		</div>
+	</div>
 </template>
 
 <script>
@@ -117,11 +133,12 @@ import inventory from './functions/core/inventory'
 import refine from './functions/core/refine'
 import repair from './functions/core/repair'
 import exchange from './functions/core/exchange'
+import message from './functions/core/message'
 
 import * as itemviewtable from './functions/itemviewtable'
 import globalSd from './functions/globalsd'
 
-import { provide,ref } from 'vue'
+import { provide,ref} from 'vue'
 
 export default {
 	components: { RepairModal, RefineUI, Inventory, Exchange, OverlayModalBase},
@@ -131,10 +148,12 @@ export default {
 		provide('repair', repair)
 		provide('itemviewtable', itemviewtable)
 		provide('exchange', exchange)
+		provide('messages', message)
 
 		return {
-			inventory, refine, repair, exchange, sd: globalSd,
-			showHelpModal: ref(false)
+			inventory, refine, repair, exchange, message,
+			sd: globalSd,
+			showHelpModal: ref(false),
 		}
 	}
 }
@@ -142,6 +161,62 @@ export default {
 
 <style lang="scss">
 @import "./scss/main.scss";
+
+.messaging {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: grid;
+	align-items: center;
+	justify-items: center;
+	width: 100vw;
+	height: 100vh;
+	background: rgba(0,0,0,0.5);
+	color: white;
+	font-weight: bolder;
+
+	.container {
+		display: grid;
+	}
+
+	.message {
+		background: rgba(0,0,0,0.9);
+		padding: 10px;
+		border-radius:10px;
+		animation: floatup 2s;
+		max-height: 50px;
+
+		@keyframes floatup {
+			0% {
+				transform: scale(0,0);
+			}
+			25% {
+				transform: scale(1.2,1.2);
+				opacity: 1;
+			}
+			100% {
+				transform: translate(0, -50px);
+				opacity: 0;
+			}
+		}
+
+		@media screen and (max-width: 700px) {
+			@keyframes floatup {
+				0% {
+					transform: scale(0,0);
+				}
+				25% {
+					transform: scale(1.2,1.2);
+					opacity: 1;
+				}
+				100% {
+					//transform: translate(0, -50px);
+					opacity: 0;
+				}
+			}
+		}
+	}
+}
 
 .help-text {
 	color: rgb(32, 32, 11);
@@ -154,11 +229,9 @@ export default {
 }
 
 .main {
-	margin: 10px;
-	padding: 10px;
 	background: linear-gradient(rgb(1, 99, 179), rgb(1, 27, 49));
 	height: calc(100vh - 40px);
-	width: calc(100vw - 40px);
+	width: calc(100vw);
 	border-radius: 10px;
 	border: none;
 	position: relative;

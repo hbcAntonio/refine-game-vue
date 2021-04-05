@@ -1,8 +1,15 @@
 import { reactive } from 'vue'
 import * as itemdb from '../itemdb'
 import inventory from '../inventory'
+import message from '../message'
 
-const sd = reactive({
+let saved = {}
+
+if (localStorage.getItem('exchange')) {
+	saved = JSON.parse(localStorage.getItem('exchange'))
+}
+
+const sd = reactive(saved.sd || {
 	show: false,
 	itemlist: {},
 	selectedItem: {}
@@ -104,19 +111,26 @@ const clif_buy_item = (qty=1) => {
 	if (sd.itemlist[sd.selectedItem.uid].qty <= 0 || !sd.selectedItem.stackable)
 		delete sd.itemlist[sd.selectedItem.uid]
 
+	message.clif_add_message(`Bought ${sd.selectedItem.name} x${qty}`,1000)
 	return true
 }
 
-clif_add_exchange_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 3, attribute: 1, stackable: true, qty: 12})
-clif_add_exchange_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 4, attribute: 0})
-clif_add_exchange_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 3, attribute: 0, stackable: true, qty: 12})
-clif_add_exchange_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 4, attribute: 0})
-clif_add_exchange_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 9, attribute: 0})
-clif_add_exchange_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 12, attribute: 0})
-clif_add_exchange_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 0, attribute: 0, stackable: true, qty: 112})
-clif_add_exchange_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 0, attribute: 0, stackable: true, qty: 179})
-clif_add_exchange_item(itemdb.ids.ELUNIUM, 1000000)
-clif_add_exchange_item(itemdb.ids.ORIDECON, 1000000)
+if (Object.values(sd.itemlist).length <= 0) {
+	clif_add_exchange_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 3, attribute: 1, stackable: true, qty: 12})
+	clif_add_exchange_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 4, attribute: 0})
+	clif_add_exchange_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 3, attribute: 0, stackable: true, qty: 12})
+	clif_add_exchange_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 4, attribute: 0})
+	clif_add_exchange_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 9, attribute: 0})
+	clif_add_exchange_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 12, attribute: 0})
+	clif_add_exchange_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 0, attribute: 0, stackable: true, qty: 112})
+	clif_add_exchange_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 0, attribute: 0, stackable: true, qty: 179})
+	clif_add_exchange_item(itemdb.ids.ELUNIUM, 1000000)
+	clif_add_exchange_item(itemdb.ids.ORIDECON, 1000000)
+}
+
+setInterval(() => {
+	localStorage.setItem('exchange', JSON.stringify({ sd }))
+}, 5000)
 
 export default {
 	sd,

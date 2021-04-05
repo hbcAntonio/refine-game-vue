@@ -6,6 +6,14 @@
 	>
 		<div class="img-container">
 			<img :src="itemviewtable[equip.resourceviewid]">
+			<div class="item-name">
+				<span
+					v-if="equip.refineCount"
+					class="refine-count"
+				>+{{ equip.refineCount }}</span><span
+					class="equip-name"
+				>&nbsp;{{ equip.name }}</span>
+			</div>
 		</div>
 		
 		<div class="item-name">
@@ -64,8 +72,12 @@ export default {
 	.img-container{
 		padding: 20px;
 		border-radius: 10px;
-		background: white;
+		background: linear-gradient(white, rgb(224, 224, 224));
 		color: black;
+
+		.item-name {
+			display: none;
+		}
 	}
 	
 	.item-name {
@@ -75,7 +87,7 @@ export default {
 	.requirements {
 		padding: 10px;
 		border-radius: 10px;
-		background: white;
+		background: linear-gradient(white, rgb(224, 224, 224));
 		color: black;
 		position: relative;
 		padding-top: 30px;
@@ -110,6 +122,25 @@ export default {
 
 		.img-container {
 			background: rgba(255, 0, 0, 0.315);
+		}
+	}
+
+	@media screen and (max-width: 700px) {
+		grid-template-columns: auto auto auto;
+		max-width: 320px;
+		overflow: hidden;
+
+		.img-container {
+			text-align: center;
+			padding: 5px;
+			margin: 5px;
+			.item-name {
+				display: block;
+			}
+		}
+
+		.item-name {
+			display: none;
 		}
 	}
 }
