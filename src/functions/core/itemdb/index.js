@@ -12,7 +12,7 @@ const clif_instantiate_item = (id, qty=1, options={}) => {
 		Array.from(Array(parseInt(qty))).forEach(i => {
 			const newid = nanoid()
 			result[newid] = { ...ref, qty: 1, refineCount: 0, uid: newid, nameid: id}
-			if (options) result[newid] = { ...result[newid], ...options}
+			if (options) result[newid] = { ...result[newid], ...options, qty: 1}
 		})
 
 		return result

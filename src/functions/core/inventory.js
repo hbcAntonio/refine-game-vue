@@ -50,6 +50,7 @@ const clif_add_item = (id='ancient-cape', qty=1, options={}) => {
 	if (options.uid) delete options.uid
 
 	// Is this a stackable item?
+	
 	if (itemdb.db[id]?.stackable) {
 		// Find item first to add to the stack instead
 		// of creating a new instance
@@ -59,7 +60,7 @@ const clif_add_item = (id='ancient-cape', qty=1, options={}) => {
 			const _options = {...options}
 			delete _options.qty // just in case
 			if (_options.equipment) delete _options.stackable
-			itemlist[items[0].uid] = {...itemlist[items[0].uid], ..._options}
+			itemlist[items[0].uid] = {...itemlist[items[0].uid], ..._options, qty: 1}
 			return true
 		}
 	}
