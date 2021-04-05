@@ -5,7 +5,7 @@
 	>
 		<img :src="itemviewtable[item.resourceviewid]">
 		<span
-			
+			v-if="item.stackable"
 			class="qty"
 		>{{ item.qty > 9999 ? '9999+' : item.qty }}</span>
 		<span
