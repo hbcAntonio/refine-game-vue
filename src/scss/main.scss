@@ -5,6 +5,7 @@ body {
 	overflow: hidden;
 	font-family: 'Noto Sans JP', sans-serif;
 	background: linear-gradient(rgb(36, 156, 255), rgb(0, 133, 241));
+	touch-action: manipulation;
 }
 
 .btn {

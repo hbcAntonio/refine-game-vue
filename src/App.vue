@@ -1,27 +1,4 @@
 <template>
-	<!-- <div
-		class="inputs"
-		style="display:grid"
-	>
-		<input
-			type="button"
-			:value="`show repair modal: ${sd.showRepair.value}`"
-			@click="sd.showRepair.value = true"
-		>
-
-		<input
-			type="button"
-			:value="`show inventory modal: ${sd.showInventory.value}`"
-			@click="inventory.sd.show = true"
-		>
-
-		<input
-			type="button"
-			:value="`show exchange modal: ${sd.showExchange.value}`"
-			@click="exchange.sd.show = true"
-		>
-	</div> -->
-
 	<!-- Main application -->
 	<div class="main">
 		<!-- Hollgrehen -->
@@ -71,31 +48,11 @@
 		</div>
 	</div>
 
-	<!-- Help Modal -->
-	<OverlayModalBase
+	<!-- Help/Instructions modal -->
+	<HelpModal
 		v-if="showHelpModal"
-		title="Help"
-		:is-dialog="true"
 		@close="showHelpModal=false"
-	>
-		<div
-			class="help-text"
-			style="padding: 20px"
-		>
-			Here's how you play the game:
-			<p>Your goal is to make as much money as possible before running out of possiblities to "refine" your items.</p>
-			<p>The higher the item refine level, the more money it's worth!</p>
-			<p>
-				Items require specific materials. Some require <strong>Elunium</strong>, some require <strong>Oridecon</strong>. The further you are into the refine process, all the way up to the <strong>max of +15</strong>, the <strong>more expensive refining gets</strong>.
-			</p><p>
-				During the process, you migh <strong>break</strong> items. That deeply affects the <strong>sell</strong> value and <strong>items cannot be upgraded while broken.</strong>
-			</p><p>
-				In order to <strong>repair a broken item</strong> you must use a material which refine level is <strong>+5 or below</strong>.
-			</p>
-			<p>The success chance changes over time! Does it pay to be greedy?</p>
-		</div>
-	</OverlayModalBase>
-
+	/>
 	<!-- Refine UI -->
 	<RefineUI v-if="sd.showRefine.value" />
 	<!-- Inventory -->
@@ -106,20 +63,7 @@
 	<RepairModal v-if="sd.showRepair.value" />
 
 	<!-- Messaging system-->
-	<div
-		v-if="Object.values(message.sd.messages).length > 0"
-		class="messaging"
-	>
-		<div class="container">
-			<div
-				v-for="(message, index) in message.sd.messages"
-				:id="index"
-				:key="index"
-				class="message"
-				v-html="message"
-			/>
-		</div>
-	</div>
+	<Messaging />
 </template>
 
 <script>
@@ -127,7 +71,8 @@ import RepairModal from './components/RefineUI/RepairModal.vue'
 import RefineUI from './components/RefineUI/RefineUI.vue'
 import Inventory from './components/Inventory/Inventory.vue'
 import Exchange from './components/Exchange/Exchange.vue'
-import OverlayModalBase from './components/Modal/OverlayModalBase.vue'
+import HelpModal from './components/HelpModal.vue'
+import Messaging from './components/Messaging.vue'
 
 import inventory from './functions/core/inventory'
 import refine from './functions/core/refine'
@@ -141,14 +86,18 @@ import globalSd from './functions/globalsd'
 import { provide,ref} from 'vue'
 
 export default {
-	components: { RepairModal, RefineUI, Inventory, Exchange, OverlayModalBase},
+	components: { 
+		RepairModal, RefineUI, Inventory, 
+		Exchange, HelpModal, Messaging
+	},
+	
 	setup() {
 		provide('inventory', inventory)
 		provide('refine', refine)
 		provide('repair', repair)
 		provide('itemviewtable', itemviewtable)
 		provide('exchange', exchange)
-		provide('messages', message)
+		provide('messaging', message)
 
 		return {
 			inventory, refine, repair, exchange, message,
@@ -161,72 +110,6 @@ export default {
 
 <style lang="scss">
 @import "./scss/main.scss";
-
-.messaging {
-	position: absolute;
-	top: 0;
-	left: 0;
-	display: grid;
-	align-items: center;
-	justify-items: center;
-	width: 100vw;
-	height: 100vh;
-	background: rgba(0,0,0,0.5);
-	color: white;
-	font-weight: bolder;
-
-	.container {
-		display: grid;
-	}
-
-	.message {
-		background: rgba(0,0,0,0.9);
-		padding: 10px;
-		border-radius:10px;
-		animation: floatup 2s;
-		max-height: 50px;
-
-		@keyframes floatup {
-			0% {
-				transform: scale(0,0);
-			}
-			25% {
-				transform: scale(1.2,1.2);
-				opacity: 1;
-			}
-			100% {
-				transform: translate(0, -50px);
-				opacity: 0;
-			}
-		}
-
-		@media screen and (max-width: 700px) {
-			@keyframes floatup {
-				0% {
-					transform: scale(0,0);
-				}
-				25% {
-					transform: scale(1.2,1.2);
-					opacity: 1;
-				}
-				100% {
-					//transform: translate(0, -50px);
-					opacity: 0;
-				}
-			}
-		}
-	}
-}
-
-.help-text {
-	color: rgb(32, 32, 11);
-
-	strong {
-		font-size: 1.0rem;
-		color: black;
-		text-decoration: underline;
-	}
-}
 
 .main {
 	background: linear-gradient(rgb(1, 99, 179), rgb(1, 27, 49));
@@ -286,13 +169,6 @@ export default {
 		width: 100%;
 		bottom: 0;
 		position: absolute;
-		// img {
-		// 	position: absolute;
-		// 	left: -50%;
-		// 	top: -10px;
-		// 	height: 100vh;
-		// 	mix-blend-mode: multiply;
-		// }
 	}
 
 	.game-main {
