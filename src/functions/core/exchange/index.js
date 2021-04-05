@@ -92,7 +92,7 @@ const clif_buy_item = (qty=1) => {
 	const tcost = clif_get_exchange_price(sd.selectedItem, true) * qty
 
 	if (qty < 0 || sd.selectedItem.qty < qty) return
-	if (tcost > inventory.zeny()) return
+	if (tcost > inventory.zeny(undefined, true)) return
 
 	inventory.delZeny(tcost)
 	inventory.addItem(sd.selectedItem.nameid, qty, {

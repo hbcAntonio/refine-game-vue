@@ -79,7 +79,7 @@ const clif_refine_stop_check = () => {
 }
 
 const clif_refine_get_reqs = () => {
-	const zeny = ZENY_FIXED_REQ * sd.equip.refineCount
+	const zeny = parseInt(ZENY_FIXED_REQ * sd.equip.refineCount)
 	const mat = sd.equip.armor ? 'elunium' : 'oridecon'
 
 	return { zeny, mat }
