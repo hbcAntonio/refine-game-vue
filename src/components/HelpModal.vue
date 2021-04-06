@@ -20,6 +20,12 @@
 				In order to <strong>repair a broken item</strong> you must use a material which refine level is <strong>+5 or below</strong>.
 			</p>
 			<p>The success chance changes over time! Does it pay to be greedy?</p>
+			<p>
+				[DANGER ZONE] Wanna restart? <a
+					class="restart"
+					@click="restart"
+				>Click here!</a> and you'll restart your progress
+			</p>
 		</div>
 	</OverlayModalBase>
 </template>
@@ -27,7 +33,13 @@
 <script>
 import OverlayModalBase from './Modal/OverlayModalBase.vue'
 export default {
-	components: { OverlayModalBase }
+	components: { OverlayModalBase },
+	methods: {
+		restart() {
+			localStorage.clear()
+			location.reload()
+		}
+	}
 }
 </script>
 
@@ -39,6 +51,10 @@ export default {
 		font-size: 1.0rem;
 		color: black;
 		text-decoration: underline;
+	}
+
+	.restart {
+		color: rgb(110, 0, 0);
 	}
 }
 </style>
