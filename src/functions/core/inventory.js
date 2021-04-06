@@ -60,7 +60,8 @@ const clif_add_item = (id='ancient-cape', qty=1, options={}) => {
 			const _options = {...options}
 			delete _options.qty // just in case
 			if (_options.equipment) delete _options.stackable
-			itemlist[items[0].uid] = {...itemlist[items[0].uid], ..._options, qty: 1}
+			itemlist[items[0].uid] = {...itemlist[items[0].uid], ..._options}
+			if (itemlist[items[0].uid].equipment) itemlist[items[0].uid].qty = 1
 			return true
 		}
 	}
@@ -91,6 +92,7 @@ const clif_del_zeny = (qty=1) => {
 	message.clif_add_message(`Cost ${qty} Zeny!`,1000)
 	clif_del_item('zeny', qty)
 }
+
 
 const clif_sell_item = () => {
 	clif_del_uid_item(sd.selectedItem.uid)
