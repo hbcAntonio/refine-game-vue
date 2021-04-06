@@ -68,8 +68,9 @@ export default {
 	}
 
     .refine-interface {
-		background: url('../../assets/holgrehenn-bg.jpg') center bottom no-repeat;
-		background-size: 100% auto;
+		background: url('../../assets/holgrehenn-bg.jpg') center no-repeat;
+		background-size: 70% auto;
+		background-position: auto -130px;
 		background-color: black;
 		border-radius: 10px;
         padding: 20px;
@@ -80,6 +81,8 @@ export default {
 		grid-gap: 5px;
 
 		@media screen and (max-width: 700px) {
+			background: url('../../assets/holgrehenn-bg.jpg') top bottom no-repeat;
+			background-size: 100% auto;
 			grid-template-columns: 1fr;
 			grid-template-rows: auto auto auto;
 			max-height: 360px;

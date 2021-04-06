@@ -105,11 +105,6 @@ const clif_sell_item = () => {
 if (Object.values(itemlist).length <= 0) {
 	clif_add_item(itemdb.ids.ZENY, 25344562)
 	clif_add_item(itemdb.ids.ANCIENT_CAPE, 5, {refineCount: 4, attribute: 0})
-	// clif_add_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 4, attribute: 0})
-	// clif_add_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 15, attribute: 0})
-	// clif_add_item(itemdb.ids.ANCIENT_CAPE, 1, {refineCount: 3, attribute: 0})
-	// clif_add_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 4, attribute: 0})
-	// clif_add_item(itemdb.ids.CRITICAL_RING, 1, {refineCount: 9, attribute: 0})
 	clif_add_item(itemdb.ids.CRITICAL_RING, 5, {refineCount: 4, attribute: 0})
 	clif_add_item(itemdb.ids.ELUNIUM, 100)
 	clif_add_item(itemdb.ids.ORIDECON, 100)

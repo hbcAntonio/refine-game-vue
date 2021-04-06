@@ -39,17 +39,7 @@
 				<span class="item-price">{{ exchange.clif_get_exchange_price(item) }}</span>
 			</li>
 		</ul>
-
-		
-		<!-- <div
-		class="exchange-modal"
-		@click.self="exchange.sd.show=false"
-	>
-		<div class="exchange">
-			
-		</div>
-	</div> -->
-	</overlaymodalbase>
+	</OverlayModalBase>
 
 	<OverlayModalBase
 		v-if="exchange.sd.selectedItem.name"
@@ -162,7 +152,6 @@ export default {
 </script> 
 
 <style lang="scss">
-
 .confirm-buy-dialog {
 	margin: 10px;
 	background: rgba(0, 0, 0, 0.295);

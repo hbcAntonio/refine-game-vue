@@ -15,6 +15,14 @@
 						@click="showHelpModal=true"
 					>
 				</li>
+				<li>
+					<input
+						type="button"
+						value="Legal"
+						class="btn btn-primary"
+						@click="showLegalModal=true"
+					>
+				</li>
 			</ul>
 		</div>
 
@@ -53,6 +61,11 @@
 		v-if="showHelpModal"
 		@close="showHelpModal=false"
 	/>
+	<!-- Legal -->
+	<LegalModal
+		v-if="showLegalModal"
+		@close="showLegalModal=false"
+	/>
 	<!-- Refine UI -->
 	<RefineUI v-if="sd.showRefine.value" />
 	<!-- Inventory -->
@@ -72,6 +85,7 @@ import RefineUI from './components/RefineUI/RefineUI.vue'
 import Inventory from './components/Inventory/Inventory.vue'
 import Exchange from './components/Exchange/Exchange.vue'
 import HelpModal from './components/HelpModal.vue'
+import LegalModal from './components/LegalModal.vue'
 import Messaging from './components/Messaging.vue'
 
 import inventory from './functions/core/inventory'
@@ -88,7 +102,8 @@ import { provide,ref} from 'vue'
 export default {
 	components: { 
 		RepairModal, RefineUI, Inventory, 
-		Exchange, HelpModal, Messaging
+		Exchange, HelpModal, LegalModal,
+		Messaging
 	},
 	
 	setup() {
@@ -103,6 +118,7 @@ export default {
 			inventory, refine, repair, exchange, message,
 			sd: globalSd,
 			showHelpModal: ref(false),
+			showLegalModal: ref(false)
 		}
 	}
 }
@@ -142,7 +158,7 @@ export default {
 		font-size: 1.2rem;
 		font-weight: bolder;
 		padding: 10px;
-		width: 250px;
+		width: 220px;
 		background: rgba(0, 0, 0, 0.548);
 		color: white;
 		margin: 10px;
@@ -160,9 +176,9 @@ export default {
 	}
 
 	.holgrehenn-illust {
-		background: url("https://scontent.fymy1-2.fna.fbcdn.net/v/t1.0-9/s720x720/151666977_2795429900698644_7897028221993273984_o.jpg?_nc_cat=111&ccb=1-3&_nc_sid=110474&_nc_ohc=JOtlPMVLdSEAX_lYRIP&_nc_ht=scontent.fymy1-2.fna&tp=7&oh=c8cb17c97eff48ac2eb86a75d87d2cb4&oe=606D4631") no-repeat center;
-		background-blend-mode: multiply;
-		background-size: auto 100%;
+		// background: url("https://scontent.fymy1-2.fna.fbcdn.net/v/t1.0-9/s720x720/151666977_2795429900698644_7897028221993273984_o.jpg?_nc_cat=111&ccb=1-3&_nc_sid=110474&_nc_ohc=JOtlPMVLdSEAX_lYRIP&_nc_ht=scontent.fymy1-2.fna&tp=7&oh=c8cb17c97eff48ac2eb86a75d87d2cb4&oe=606D4631") no-repeat center;
+		// background-blend-mode: multiply;
+		// background-size: auto 100%;
 		border-radius: 10px;
 		box-shadow: 0 -5px 10px 0px rgba(0, 0, 0, 0.39);
 		height: 600px;

@@ -73,7 +73,6 @@ export default {
 					opacity: 1;
 				}
 				100% {
-					//transform: translate(0, -50px);
 					opacity: 0;
 				}
 			}
