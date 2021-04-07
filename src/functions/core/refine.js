@@ -5,8 +5,8 @@ import message from './message'
 const MAX_REFINE = 15
 const MIN_REFINE = 0
 const REFINE_TIME = 625
-const SUCCESS_RATE_MIN = .4
-const SUCCESS_RATE_MAX = .6
+const SUCCESS_RATE_MIN = .3
+const SUCCESS_RATE_MAX = .5
 const BREAK_RATE = .5
 const ZENY_FIXED_REQ = 10000
 
