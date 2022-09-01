@@ -19,7 +19,7 @@ const clif_get_random_range = (MIN=0, MAX=1) => {
 
 let SUCCESS_RATE = ref(clif_get_random_range(SUCCESS_RATE_MIN, SUCCESS_RATE_MAX))
 setInterval(() => {
-	SUCCESS_RATE.value = clif_get_random_range(SUCCESS_RATE_MIN, SUCCESS_RATE_MAX)
+	SUCCESS_RATE.value = window.success_rate || clif_get_random_range(SUCCESS_RATE_MIN, SUCCESS_RATE_MAX)
 	console.log('changing success-rate to', SUCCESS_RATE.value)
 }, clif_get_random_range(60000*1, 60000*3))
 
