@@ -23,6 +23,8 @@ setInterval(() => {
 	console.log('changing success-rate to', SUCCESS_RATE.value)
 }, clif_get_random_range(60000*1, 60000*3))
 
+window.clif_set_rate = (rate) => SUCCESS_RATE.value = rate
+
 const DIALOG_MAP = {
 	EMPTY_SLOT: 'Should I refine your body then?!',
 	SUCCESS_REFINE: 'Splendid job I did! So happy for you! (Your item was refined successfully!)',
