@@ -84,17 +84,34 @@ const clif_refine_get_reqs = () => {
 	const zeny = parseInt(ZENY_FIXED_REQ * sd.equip.refineCount)
 	const mat = sd.equip.armor ? 'elunium' : 'oridecon'
 
-	return { zeny, mat }
+	// Calculate material requirements based on tier
+	let matCount = 1
+	const currentLevel = sd.equip.refineCount
+
+	if (currentLevel < 4) {
+		// Up to +4: 1x material
+		matCount = 1
+	} else if (currentLevel >= 4 && currentLevel < 10) {
+		// +5 to +10: level × material
+		matCount = currentLevel + 1
+	} else {
+		// +10 to +20: 2 × level material
+		matCount = (currentLevel + 1) * 2
+	}
+
+	return { zeny, mat, matCount }
 }
 
 const clif_refine_check_requirements = (inventory) => {
-	const { zeny } = clif_refine_get_reqs()
+	const { zeny, mat, matCount } = clif_refine_get_reqs()
 
+	if (inventory.findItem(mat).length < matCount) sd.dialog = DIALOG_MAP.MISSING_MATERIAL[mat]
 	if (inventory.zeny() <= zeny) sd.dialog = DIALOG_MAP.MISSING_ZENY
 
 	if (sd.dialog) return false
 
 	inventory.delItem('zeny', zeny)
+	inventory.delItem(mat, matCount)
 
 	return true
 }

@@ -32,6 +32,7 @@
 			class="requirements"
 		>
 			<div><img :src="itemviewtable['zeny']">Zeny x{{ reqs.zeny }}</div>
+			<div><img :src="itemviewtable[reqs.mat]">{{ inventory.itemInfo(reqs.mat).name }} x{{ reqs.matCount }}</div>
 		</div>
 
 		<div

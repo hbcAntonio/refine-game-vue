@@ -4,20 +4,23 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vue-tsc --noEmit && vite build",
     "serve": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "test:ci": "vitest --run"
+    "test:ci": "vitest --run",
+    "type-check": "vue-tsc --noEmit"
   },
   "engines": {
     "node": ">=20.0.0"
   },
   "dependencies": {
+    "nanoid": "^5.1.6",
     "vue": "^3.5.24"
   },
   "devDependencies": {
+    "@types/node": "^24.10.1",
     "@vitejs/plugin-vue": "^6.0.2",
     "@vitest/ui": "^4.0.13",
     "@vue/compiler-sfc": "^3.5.24",
@@ -26,7 +29,9 @@
     "eslint-plugin-vue": "^7.8.0",
     "happy-dom": "^20.0.10",
     "sass": "^1.32.8",
+    "typescript": "^5.9.3",
     "vite": "^7.2.4",
-    "vitest": "^4.0.13"
+    "vitest": "^4.0.13",
+    "vue-tsc": "^3.1.5"
   }
 }
