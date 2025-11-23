@@ -32,14 +32,17 @@
 			class="requirements"
 		>
 			<div><img :src="itemviewtable['zeny']">Zeny x{{ reqs.zeny }}</div>
-			<div><img :src="itemviewtable[reqs.mat]">{{ inventory.itemInfo(reqs.mat).name }} x1</div>
+			<div><img :src="itemviewtable[reqs.mat]">{{ inventory.itemInfo(reqs.mat).name }} x{{ reqs.matCount }}</div>
 		</div>
 
 		<div
 			v-if="equip.attribute"
 			class="requirements"
 		>
-			<div><img :src="itemviewtable[equip.resourceviewid]"> {{ equip.name }} x1</div>
+			<div>
+				<img :src="itemviewtable[equip.resourceviewid]">
+				{{ equip.name }} materials worth {{ repairPoints }} {{ repairPoints === 1 ? 'point' : 'points' }}
+			</div>
 		</div>
 	</div>
 </template>
@@ -47,15 +50,21 @@
 <script>
 import * as itemviewtable from '../../functions/itemviewtable.js'
 import inventory from '../../functions/core/inventory'
+import repair from '../../functions/core/repair'
+import { computed } from 'vue'
 
 export default {
-	props: { 
+	props: {
 		equip: { type: Object, default: () => {} },
 		reqs: { type: Object, default: () => {} }
 	},
 	emits: ['repair'],
-	setup() { 
-		return { itemviewtable, inventory } 
+	setup(props) {
+		const repairPoints = computed(() => {
+			return props.equip.attribute ? repair.getRequiredPoints(props.equip) : 0
+		})
+
+		return { itemviewtable, inventory, repairPoints }
 	}
 }
 </script>
@@ -68,12 +77,28 @@ export default {
 	display: grid;
 	align-items: center;
 	justify-items: center;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
 	.img-container{
 		padding: 20px;
 		border-radius: 10px;
 		background: linear-gradient(white, rgb(224, 224, 224));
 		color: black;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+		img {
+			transition: all 0.3s ease;
+		}
+
+		&:hover {
+			transform: translateY(-3px);
+			box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+
+			img {
+				transform: scale(1.05);
+			}
+		}
 
 		.item-name {
 			display: none;
@@ -92,6 +117,20 @@ export default {
 		position: relative;
 		padding-top: 30px;
 		width: 85%;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		animation: slideInUp 0.4s ease-out;
+
+		@keyframes slideInUp {
+			from {
+				opacity: 0;
+				transform: translateY(20px);
+			}
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
 
 		img {
 			max-width: 25px;
@@ -114,6 +153,16 @@ export default {
 			border-radius: 10px;
 			padding: 6px;
 			box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.301);
+			transition: all 0.3s ease;
+		}
+
+		&:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+
+			&::before {
+				box-shadow: 0px 5px 8px 0px rgba(0, 0, 0, 0.4);
+			}
 		}
 	}
 
@@ -121,7 +170,17 @@ export default {
 		background: rgba(255, 0, 0, 0.301);
 
 		.img-container {
-			background: rgba(255, 0, 0, 0.315);
+			background: linear-gradient(rgba(255, 0, 0, 0.4), rgba(200, 0, 0, 0.5));
+			animation: pulse 2s infinite;
+
+			@keyframes pulse {
+				0%, 100% {
+					opacity: 1;
+				}
+				50% {
+					opacity: 0.7;
+				}
+			}
 		}
 	}
 

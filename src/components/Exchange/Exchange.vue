@@ -309,10 +309,11 @@ ul.exchange-itemlist {
 
 		border: 1px solid rgb(180, 180, 180);
 		border-radius: 10px;
+		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
 		&:hover {
-			transition: all 0.1s ease-in;
-			transform:scale(1.025, 1.025);
+			transform: translateY(-2px);
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 		}
 
 		span {

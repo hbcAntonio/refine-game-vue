@@ -2,7 +2,7 @@ import { reactive, ref } from 'vue'
 import inventoryState from './inventory'
 import message from './message'
 
-const MAX_REFINE = 15
+const MAX_REFINE = 20
 const MIN_REFINE = 0
 const REFINE_TIME = 625
 const SUCCESS_RATE_MIN = .3
@@ -54,7 +54,7 @@ const clif_refine_sub = (equip, success) => {
 	if (equip.refineCount < 4) success = true
 
 	equip.refineCount += 1 * (success ? 1: -1)
-	equip.refineCount = equip.refineCount > MAX_REFINE ? 15 : (equip.refineCount < MIN_REFINE ? 0 : equip.refineCount)
+	equip.refineCount = equip.refineCount > MAX_REFINE ? MAX_REFINE : (equip.refineCount < MIN_REFINE ? 0 : equip.refineCount)
 
 	return success
 }
@@ -84,19 +84,40 @@ const clif_refine_get_reqs = () => {
 	const zeny = parseInt(ZENY_FIXED_REQ * sd.equip.refineCount)
 	const mat = sd.equip.armor ? 'elunium' : 'oridecon'
 
-	return { zeny, mat }
+	// Calculate material requirements based on tier
+	let matCount = 1
+	const currentLevel = sd.equip.refineCount
+
+	if (currentLevel < 4) {
+		// Up to +4: 1x material
+		matCount = 1
+	} else if (currentLevel >= 4 && currentLevel < 10) {
+		// +4 to +9: (level + 1) materials
+		// e.g., at +5 need 6 mats to go to +6
+		matCount = currentLevel + 1
+	} else {
+		// +10 to +19: level × 2 materials
+		// e.g., at +10 need 20 mats to go to +11
+		matCount = currentLevel * 2
+	}
+
+	return { zeny, mat, matCount }
 }
 
 const clif_refine_check_requirements = (inventory) => {
-	const { zeny, mat } = clif_refine_get_reqs()
+	const { zeny, mat, matCount } = clif_refine_get_reqs()
 
-	if (inventory.findItem(mat).length <= 0) sd.dialog = DIALOG_MAP.MISSING_MATERIAL[mat]
+	// Calculate total quantity of materials
+	const foundItems = inventory.findItem(mat)
+	const totalMaterialQty = foundItems.reduce((sum, item) => sum + (item.qty || 1), 0)
+
+	if (totalMaterialQty < matCount) sd.dialog = DIALOG_MAP.MISSING_MATERIAL[mat]
 	if (inventory.zeny() <= zeny) sd.dialog = DIALOG_MAP.MISSING_ZENY
 
 	if (sd.dialog) return false
 
 	inventory.delItem('zeny', zeny)
-	inventory.delItem(mat, 1)
+	inventory.delItem(mat, matCount)
 
 	return true
 }
@@ -120,9 +141,9 @@ const start = async (inventory=inventoryState) => {
 		if (clif_refine(sd.equip)) {
 			sd.dialog = DIALOG_MAP.SUCCESS_REFINE
 			message.clif_add_message('<strong style="color: limegreen;">Success!</strong>', 1000)
-			if (sd.equip.refineCount === 15) {
+			if (sd.equip.refineCount === MAX_REFINE) {
 				sd.equip = {}
-				setTimeout(() => message.clif_add_message('<strong style="color: limegreen;">+15 Achieved!</strong>', 1000), 1000)
+				setTimeout(() => message.clif_add_message('<strong style="color: limegreen;">+' + MAX_REFINE + ' Achieved!</strong>', 1000), 1000)
 			}
 			resolve()
 			return
