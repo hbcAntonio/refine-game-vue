@@ -32,5 +32,18 @@ module.exports = {
 			'never'
 		],
 		'vue/html-indent': ['error', 'tab']
-	}
+	},
+	'overrides': [
+		{
+			'files': ['**/__tests__/**/*.js', '**/*.test.js', '**/*.spec.js'],
+			'globals': {
+				'vi': 'readonly',
+				'describe': 'readonly',
+				'it': 'readonly',
+				'expect': 'readonly',
+				'beforeEach': 'readonly',
+				'afterEach': 'readonly'
+			}
+		}
+	]
 }
