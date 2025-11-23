@@ -24,7 +24,7 @@
 					</div>
 				</div>
 				<p class="hint">
-					💡 Tip: Whole items worth 1 point, Broken items worth their + level
+					Tip: Items are worth their + level in points (minimum 1)
 				</p>
 			</div>
 			<ul>

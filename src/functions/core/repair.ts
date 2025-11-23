@@ -13,9 +13,8 @@ const sd = reactive<RepairState>({
 
 // Calculate the "point value" of an item for repair
 const getItemPoints = (item: Equipment): number => {
-  // Non-broken items are worth 1 point
-  // Broken items are worth their refineCount in points
-  return item.attribute ? item.refineCount : 1
+  // All items are worth their refineCount in points (minimum 1)
+  return Math.max(1, item.refineCount)
 }
 
 // Calculate required points to repair an item
@@ -68,7 +67,11 @@ const clif_check_repair = (inventory: typeof inventoryState, equip: Equipment): 
     sd.materials[key] = ref
   }
 
-  if (Object.keys(sd.materials).length) sd.show = true
+  if (Object.keys(sd.materials).length) {
+    sd.show = true
+  } else {
+    message.clif_add_message('<strong style="color: orange;">No suitable materials found for repair!</strong>', 2000)
+  }
 }
 
 export default {

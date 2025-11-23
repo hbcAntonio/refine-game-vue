@@ -80,7 +80,7 @@ const DIALOG_MAP = {
   BREAK_REFINE: '',    // Will be filled dynamically
   IDLE: '',            // Will be filled dynamically
   IDLE_BROKEN: 'This item is broken! I\'ll need to repair it before any refining can occur.',
-  REFINING: '🔨 Let the magic begin...',
+  REFINING: 'Let the magic begin...',
   BUSY: 'Patience! I\'m already working on something!',
   BROKEN: 'I cannot refine broken items! Get it repaired first!',
   MISSING_ZENY: 'You don\'t have enough Zeny! My services aren\'t free!',
@@ -196,12 +196,12 @@ const start = async (inventory = inventoryState): Promise<void> => {
     setTimeout(() => {
       if (clif_refine(sd.equip)) {
         sd.dialog = getRandomPhrase(SUCCESS_PHRASES)
-        message.clif_add_message('<strong style="color: limegreen;">✨ Success!</strong>', 1000)
+        message.clif_add_message('<strong style="color: limegreen;">Success!</strong>', 1000)
         if (sd.equip.refineCount === MAX_REFINE) {
           sd.equip = {}
           setTimeout(
             () =>
-              message.clif_add_message('<strong style="color: limegreen;">🎉 +' + MAX_REFINE + ' LEGENDARY!</strong>', 1000),
+              message.clif_add_message('<strong style="color: limegreen;">+' + MAX_REFINE + ' LEGENDARY!</strong>', 1000),
             1000
           )
         }
@@ -211,7 +211,7 @@ const start = async (inventory = inventoryState): Promise<void> => {
 
       sd.dialog = sd.equip.attribute ? getRandomPhrase(BREAK_PHRASES) : getRandomPhrase(FAILURE_PHRASES)
       message.clif_add_message(
-        `<strong style="color: ${sd.equip.attribute ? 'red' : 'orange'};">${sd.equip.attribute ? '💔 Broken!' : '⚠️ Failed!'}</strong>`,
+        `<strong style="color: ${sd.equip.attribute ? 'red' : 'orange'};">${sd.equip.attribute ? 'Broken!' : 'Failed!'}</strong>`,
         1000
       )
       resolve()

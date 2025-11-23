@@ -12,34 +12,34 @@ describe('Repair System', () => {
   })
 
   describe('Point Calculation', () => {
-    it('should calculate 1 point for non-broken items', () => {
-      const nonBrokenItem: Equipment = {
+    it('should calculate refineCount points for items', () => {
+      const item: Equipment = {
         uid: 'test-1',
         nameid: 1234,
         name: 'Test Sword',
         refineCount: 5,
-        attribute: 0, // not broken
+        attribute: 0,
         armor: false,
         resourceviewid: 'test'
       }
 
-      const points = repairState.getItemPoints(nonBrokenItem)
-      expect(points).toBe(1)
+      const points = repairState.getItemPoints(item)
+      expect(points).toBe(5)
     })
 
-    it('should calculate refineCount points for broken items', () => {
-      const brokenItem: Equipment = {
+    it('should calculate minimum 1 point for +0 items', () => {
+      const zeroRefineItem: Equipment = {
         uid: 'test-2',
         nameid: 1234,
         name: 'Test Sword',
-        refineCount: 7,
-        attribute: 1, // broken
+        refineCount: 0,
+        attribute: 0,
         armor: false,
         resourceviewid: 'test'
       }
 
-      const points = repairState.getItemPoints(brokenItem)
-      expect(points).toBe(7)
+      const points = repairState.getItemPoints(zeroRefineItem)
+      expect(points).toBe(1)
     })
   })
 
@@ -97,7 +97,7 @@ describe('Repair System', () => {
         nameid: 1234,
         name: 'Test Sword',
         refineCount: 5,
-        attribute: 0, // non-broken = 1 point
+        attribute: 0,
         armor: false,
         resourceviewid: 'test'
       }
@@ -107,7 +107,7 @@ describe('Repair System', () => {
         nameid: 1234,
         name: 'Test Sword',
         refineCount: 3,
-        attribute: 1, // broken +3 = 3 points
+        attribute: 1,
         armor: false,
         resourceviewid: 'test'
       }
@@ -115,8 +115,8 @@ describe('Repair System', () => {
       repairState.sd.selectedMaterials = [material1, material2]
       const totalPoints = repairState.getSelectedPoints()
 
-      // 1 + 3 = 4 points total
-      expect(totalPoints).toBe(4)
+      // 5 + 3 = 8 points total
+      expect(totalPoints).toBe(8)
     })
 
     it('should return 0 points when no materials selected', () => {
