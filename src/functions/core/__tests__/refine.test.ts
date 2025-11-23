@@ -43,7 +43,7 @@ describe('Refine System', () => {
       expect(reqs.matCount).toBe(6)
     })
 
-    it('should require 2 × (level + 1) materials for +10 to +20', () => {
+    it('should require 2 × level materials for +10 to +20', () => {
       const testEquip: Partial<Equipment> = {
         uid: 'test-3',
         name: 'Test Sword',
@@ -55,8 +55,8 @@ describe('Refine System', () => {
       refineState.setEquip(testEquip)
       const reqs = refineState.getReqs()
 
-      // At level 15, should need 32 materials (16 × 2)
-      expect(reqs.matCount).toBe(32)
+      // At level 15, should need 30 materials (15 × 2)
+      expect(reqs.matCount).toBe(30)
     })
 
     it('should use elunium for armor', () => {

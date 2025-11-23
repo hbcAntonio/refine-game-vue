@@ -6,14 +6,25 @@
 	>
 		<div class="repair-modal">
 			<div class="repair-info">
-				<p>
-					<strong>Required:</strong> {{ requiredPoints }} {{ requiredPoints === 1 ? 'point' : 'points' }}
-				</p>
-				<p>
-					<strong>Selected:</strong> {{ selectedPoints }} {{ selectedPoints === 1 ? 'point' : 'points' }}
-				</p>
+				<div class="repair-progress">
+					<div class="progress-label">
+						<span>Materials Needed</span>
+						<span class="points-display" :class="{ 'enough': selectedPoints >= requiredPoints }">
+							{{ selectedPoints }} / {{ requiredPoints }}
+						</span>
+					</div>
+					<div class="progress-bar-container">
+						<div
+							class="progress-bar"
+							:class="{ 'complete': selectedPoints >= requiredPoints }"
+							:style="{ width: Math.min(100, (selectedPoints / requiredPoints) * 100) + '%' }"
+						>
+							<div v-if="selectedPoints >= requiredPoints" class="checkmark">✓</div>
+						</div>
+					</div>
+				</div>
 				<p class="hint">
-					Non-broken items = 1 point, Broken items = their + level
+					💡 Tip: Whole items worth 1 point, Broken items worth their + level
 				</p>
 			</div>
 			<ul>
@@ -103,8 +114,14 @@ export default {
 				// Remove if already selected
 				repair.sd.selectedMaterials.splice(index, 1)
 			} else {
-				// Add if not selected
-				repair.sd.selectedMaterials.push(material)
+				// Only add if we haven't reached required points yet
+				const currentPoints = repair.getSelectedPoints()
+				const required = repair.getRequiredPoints(repair.sd.brokenEquip)
+
+				// Don't allow adding if we already have enough points
+				if (currentPoints < required) {
+					repair.sd.selectedMaterials.push(material)
+				}
 			}
 		}
 
@@ -148,16 +165,84 @@ export default {
 		padding: 15px;
 		border-radius: 10px;
 		width: 100%;
-		text-align: center;
+
+		.repair-progress {
+			margin-bottom: 10px;
+
+			.progress-label {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				margin-bottom: 8px;
+				font-weight: 500;
+
+				.points-display {
+					font-size: 1.1rem;
+					padding: 4px 12px;
+					border-radius: 12px;
+					background: rgba(255, 165, 0, 0.2);
+					color: rgb(255, 140, 0);
+					transition: all 0.3s ease;
+
+					&.enough {
+						background: rgba(50, 205, 50, 0.2);
+						color: rgb(34, 139, 34);
+						font-weight: bold;
+					}
+				}
+			}
+
+			.progress-bar-container {
+				width: 100%;
+				height: 24px;
+				background: rgba(0, 0, 0, 0.2);
+				border-radius: 12px;
+				overflow: hidden;
+				box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+
+				.progress-bar {
+					height: 100%;
+					background: linear-gradient(90deg, rgb(255, 165, 0), rgb(255, 140, 0));
+					transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+					display: flex;
+					align-items: center;
+					justify-content: flex-end;
+					padding-right: 8px;
+					position: relative;
+
+					&.complete {
+						background: linear-gradient(90deg, rgb(50, 205, 50), rgb(34, 139, 34));
+						animation: pulse-green 1.5s ease-in-out infinite;
+					}
+
+					.checkmark {
+						color: white;
+						font-weight: bold;
+						font-size: 1.1rem;
+						text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+					}
+
+					@keyframes pulse-green {
+						0%, 100% {
+							opacity: 1;
+						}
+						50% {
+							opacity: 0.8;
+						}
+					}
+				}
+			}
+		}
 
 		p {
 			margin: 5px 0;
+			text-align: center;
 		}
 
 		.hint {
 			font-size: 0.85rem;
 			color: rgba(0, 0, 0, 0.6);
-			font-style: italic;
+			margin-top: 8px;
 		}
 	}
 

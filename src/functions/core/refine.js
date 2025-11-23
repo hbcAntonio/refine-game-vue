@@ -92,11 +92,13 @@ const clif_refine_get_reqs = () => {
 		// Up to +4: 1x material
 		matCount = 1
 	} else if (currentLevel >= 4 && currentLevel < 10) {
-		// +5 to +10: level × material
+		// +4 to +9: (level + 1) materials
+		// e.g., at +5 need 6 mats to go to +6
 		matCount = currentLevel + 1
 	} else {
-		// +10 to +20: 2 × level material
-		matCount = (currentLevel + 1) * 2
+		// +10 to +19: level × 2 materials
+		// e.g., at +10 need 20 mats to go to +11
+		matCount = currentLevel * 2
 	}
 
 	return { zeny, mat, matCount }

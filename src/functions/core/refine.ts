@@ -37,22 +37,63 @@ window.clif_set_rate = (rate: number) => {
   SUCCESS_RATE.value = rate
 }
 
+const SUCCESS_PHRASES = [
+  'Magnificent! I knew I could do it!',
+  'Ha! Another masterpiece from yours truly!',
+  'Perfection! You may thank me later.',
+  'Success! Though I had my doubts about YOU...',
+  'Brilliant work, as expected from ME!',
+  'Wonderful! This is why I\'m the best!'
+]
+
+const FAILURE_PHRASES = [
+  'Oops... well, these things happen to the BEST of us!',
+  'Not my fault! The materials were clearly sub-par.',
+  'Ugh! I swear the hammer slipped...',
+  'Almost had it! Next time for sure!',
+  'This never happened when I worked for the king...',
+  'Hmm... perhaps I should have had breakfast first.'
+]
+
+const BREAK_PHRASES = [
+  'WHAT?! No, no, NO! This is unprecedented!',
+  'I... I don\'t believe it! The cosmos are against us!',
+  'Catastrophe! But surely not MY fault!',
+  'Oh dear... perhaps we should never speak of this again.',
+  'IMPOSSIBLE! My technique is flawless!',
+  'Well... at least it can be repaired, yes?'
+]
+
+const IDLE_PHRASES = [
+  'My name is Holgrehenn, the finest smith in all the lands!',
+  'What masterpiece shall we create today?',
+  'Ah, another customer seeking perfection!',
+  'Choose wisely, I don\'t work for free you know!',
+  'My hammer awaits! Which equipment shall we enhance?',
+  'Step right up! Holgrehenn\'s shop never disappoints!'
+]
+
 const DIALOG_MAP = {
-  EMPTY_SLOT: 'Should I refine your body then?!',
-  SUCCESS_REFINE: 'Splendid job I did! So happy for you! (Your item was refined successfully!)',
-  FAILURE_REFINE: 'Oh no... I swear I will try to do better next time! (Your item lost one level of refinement)',
-  BREAK_REFINE: "I... don't even know what to say!!! (Your item broke!)",
-  IDLE: 'My name is Holgrehenn, and I hate you!',
-  IDLE_BROKEN: 'This item is broken, I will need to repair it first...',
-  REFINING: 'Here we go...',
-  BUSY: 'I happen to be busy already....',
-  BROKEN: 'I cannot refine broken items...',
-  MISSING_ZENY: "You don't have enough Zeny...",
+  EMPTY_SLOT: 'Should I refine your body then?! Select an item first!',
+  SUCCESS_REFINE: '',  // Will be filled dynamically
+  FAILURE_REFINE: '',  // Will be filled dynamically
+  BREAK_REFINE: '',    // Will be filled dynamically
+  IDLE: '',            // Will be filled dynamically
+  IDLE_BROKEN: 'This item is broken! I\'ll need to repair it before any refining can occur.',
+  REFINING: '🔨 Let the magic begin...',
+  BUSY: 'Patience! I\'m already working on something!',
+  BROKEN: 'I cannot refine broken items! Get it repaired first!',
+  MISSING_ZENY: 'You don\'t have enough Zeny! My services aren\'t free!',
   MISSING_MATERIAL: {
-    oridecon: 'I need an Oridecon to refine this item...',
-    elunium: 'I need an Elunium to refine this item...'
+    oridecon: 'I need Oridecon to refine this weapon! More of it, actually...',
+    elunium: 'I need Elunium to refine this armor! Bring me more!'
   }
 } as const
+
+// Helper to get random phrase
+const getRandomPhrase = (phrases: readonly string[]): string => {
+  return phrases[Math.floor(Math.random() * phrases.length)]
+}
 
 const sd = reactive<RefineState>({
   refining: false,
@@ -108,11 +149,13 @@ const clif_refine_get_reqs = (): RefineRequirements => {
     // Up to +4: 1x material
     matCount = 1
   } else if (currentLevel >= 4 && currentLevel < 10) {
-    // +5 to +10: level × material
+    // +4 to +9: (level + 1) materials
+    // e.g., at +5 need 6 mats to go to +6
     matCount = currentLevel + 1
   } else {
-    // +10 to +20: 2 × level material
-    matCount = (currentLevel + 1) * 2
+    // +10 to +19: level × 2 materials
+    // e.g., at +10 need 20 mats to go to +11
+    matCount = currentLevel * 2
   }
 
   return { zeny, mat, matCount }
@@ -137,7 +180,7 @@ const clif_refine_check_requirements = (inventory: typeof inventoryState): boole
 
 const setEquip = (equip: Partial<Equipment>): void => {
   sd.equip = equip
-  sd.dialog = equip.attribute ? DIALOG_MAP.IDLE_BROKEN : DIALOG_MAP.IDLE
+  sd.dialog = equip.attribute ? DIALOG_MAP.IDLE_BROKEN : getRandomPhrase(IDLE_PHRASES)
 }
 
 const start = async (inventory = inventoryState): Promise<void> => {
@@ -152,13 +195,13 @@ const start = async (inventory = inventoryState): Promise<void> => {
   await new Promise<void>(resolve =>
     setTimeout(() => {
       if (clif_refine(sd.equip)) {
-        sd.dialog = DIALOG_MAP.SUCCESS_REFINE
-        message.clif_add_message('<strong style="color: limegreen;">Success!</strong>', 1000)
+        sd.dialog = getRandomPhrase(SUCCESS_PHRASES)
+        message.clif_add_message('<strong style="color: limegreen;">✨ Success!</strong>', 1000)
         if (sd.equip.refineCount === MAX_REFINE) {
           sd.equip = {}
           setTimeout(
             () =>
-              message.clif_add_message('<strong style="color: limegreen;">+' + MAX_REFINE + ' Achieved!</strong>', 1000),
+              message.clif_add_message('<strong style="color: limegreen;">🎉 +' + MAX_REFINE + ' LEGENDARY!</strong>', 1000),
             1000
           )
         }
@@ -166,9 +209,9 @@ const start = async (inventory = inventoryState): Promise<void> => {
         return
       }
 
-      sd.dialog = sd.equip.attribute ? DIALOG_MAP.BREAK_REFINE : DIALOG_MAP.FAILURE_REFINE
+      sd.dialog = sd.equip.attribute ? getRandomPhrase(BREAK_PHRASES) : getRandomPhrase(FAILURE_PHRASES)
       message.clif_add_message(
-        `<strong style="color: ${sd.equip.attribute ? 'red' : 'orange'};">${sd.equip.attribute ? 'Broken' : 'Failure'}!</strong>`,
+        `<strong style="color: ${sd.equip.attribute ? 'red' : 'orange'};">${sd.equip.attribute ? '💔 Broken!' : '⚠️ Failed!'}</strong>`,
         1000
       )
       resolve()
