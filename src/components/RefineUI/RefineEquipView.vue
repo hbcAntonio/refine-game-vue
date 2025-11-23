@@ -40,9 +40,9 @@
 			class="requirements"
 		>
 			<div>
-			<img :src="itemviewtable[equip.resourceviewid]">
-			{{ equip.name }} materials worth {{ repairPoints }} {{ repairPoints === 1 ? 'point' : 'points' }}
-		</div>
+				<img :src="itemviewtable[equip.resourceviewid]">
+				{{ equip.name }} materials worth {{ repairPoints }} {{ repairPoints === 1 ? 'point' : 'points' }}
+			</div>
 		</div>
 	</div>
 </template>
