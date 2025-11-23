@@ -164,7 +164,11 @@ const clif_refine_get_reqs = (): RefineRequirements => {
 const clif_refine_check_requirements = (inventory: typeof inventoryState): boolean => {
   const { zeny, mat, matCount } = clif_refine_get_reqs()
 
-  if (inventory.findItem(mat).length < matCount) {
+  // Calculate total quantity of materials
+  const foundItems = inventory.findItem(mat)
+  const totalMaterialQty = foundItems.reduce((sum, item) => sum + (item.qty || 1), 0)
+
+  if (totalMaterialQty < matCount) {
     sd.dialog = DIALOG_MAP.MISSING_MATERIAL[mat as keyof typeof DIALOG_MAP.MISSING_MATERIAL]
   }
   const currentZeny = Number(inventory.zeny())

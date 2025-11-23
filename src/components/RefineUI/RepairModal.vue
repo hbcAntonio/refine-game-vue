@@ -6,7 +6,7 @@
 	>
 		<div class="repair-modal">
 			<div class="repair-info">
-				<div class="repair-progress">
+				<div v-if="usesPoints" class="repair-progress">
 					<div class="progress-label">
 						<span>Materials Needed</span>
 						<span class="points-display" :class="{ 'enough': selectedPoints >= requiredPoints }">
@@ -22,10 +22,18 @@
 							<div v-if="selectedPoints >= requiredPoints" class="checkmark">✓</div>
 						</div>
 					</div>
+					<p class="hint">
+						Tip: Items are worth their + level in points (minimum 1)
+					</p>
 				</div>
-				<p class="hint">
-					Tip: Items are worth their + level in points (minimum 1)
-				</p>
+				<div v-else class="simple-repair">
+					<p class="simple-instruction">
+						Select 1 item to use as repair material
+					</p>
+					<p class="hint">
+						Accepted: Non-broken items or broken items below +6
+					</p>
+				</div>
 			</div>
 			<ul>
 				<li
@@ -37,7 +45,7 @@
 						:item="material"
 						@click="toggleMaterial(material)"
 					/>
-					<span class="item-points">{{ repair.getItemPoints(material) }}pt</span>
+					<span v-if="usesPoints" class="item-points">{{ repair.getItemPoints(material) }}pt</span>
 				</li>
 			</ul>
 			<div class="repair-actions">
@@ -51,7 +59,7 @@
 					type="button"
 					class="btn btn-primary"
 					value="Repair"
-					:disabled="selectedPoints < requiredPoints"
+					:disabled="!canRepair"
 					@click="confirmRepair"
 				>
 			</div>
@@ -96,12 +104,25 @@ export default {
 
 		const showConfirmDialog = ref(false)
 
+		const usesPoints = computed(() => {
+			return repair.sd.brokenEquip ? repair.usesPointSystem(repair.sd.brokenEquip) : false
+		})
+
 		const requiredPoints = computed(() => {
 			return repair.sd.brokenEquip ? repair.getRequiredPoints(repair.sd.brokenEquip) : 0
 		})
 
 		const selectedPoints = computed(() => {
 			return repair.getSelectedPoints()
+		})
+
+		const canRepair = computed(() => {
+			if (!usesPoints.value) {
+				// Simple system: need exactly 1 item
+				return repair.sd.selectedMaterials.length === 1
+			}
+			// Points system: need enough points
+			return selectedPoints.value >= requiredPoints.value
 		})
 
 		const isSelected = (material) => {
@@ -114,19 +135,24 @@ export default {
 				// Remove if already selected
 				repair.sd.selectedMaterials.splice(index, 1)
 			} else {
-				// Only add if we haven't reached required points yet
-				const currentPoints = repair.getSelectedPoints()
-				const required = repair.getRequiredPoints(repair.sd.brokenEquip)
+				if (!usesPoints.value) {
+					// Simple system: only allow 1 item
+					repair.sd.selectedMaterials = [material]
+				} else {
+					// Points system: add if we haven't reached required points yet
+					const currentPoints = repair.getSelectedPoints()
+					const required = repair.getRequiredPoints(repair.sd.brokenEquip)
 
-				// Don't allow adding if we already have enough points
-				if (currentPoints < required) {
-					repair.sd.selectedMaterials.push(material)
+					// Don't allow adding if we already have enough points
+					if (currentPoints < required) {
+						repair.sd.selectedMaterials.push(material)
+					}
 				}
 			}
 		}
 
 		const confirmRepair = () => {
-			if (selectedPoints.value >= requiredPoints.value) {
+			if (canRepair.value) {
 				showConfirmDialog.value = true
 			}
 		}
@@ -142,8 +168,10 @@ export default {
 			inventory,
 			repairItem,
 			showConfirmDialog,
+			usesPoints,
 			requiredPoints,
 			selectedPoints,
+			canRepair,
 			isSelected,
 			toggleMaterial,
 			confirmRepair
@@ -243,6 +271,16 @@ export default {
 			font-size: 0.85rem;
 			color: rgba(0, 0, 0, 0.6);
 			margin-top: 8px;
+		}
+
+		.simple-repair {
+			text-align: center;
+
+			.simple-instruction {
+				font-size: 1.1rem;
+				font-weight: 500;
+				margin-bottom: 5px;
+			}
 		}
 	}
 

@@ -2,7 +2,7 @@
 	<div class="equip-list">
 		<ul>
 			<span class="callout">
-				Please select an item to refine. Max refine is +15. Have fun!
+				Please select an item to refine. Max refine is +20. Have fun!
 			</span>
 			<li
 				v-for="equip in refinable"
@@ -23,7 +23,7 @@
 import { computed } from 'vue'
 import * as itemviewtable from '../../functions/itemviewtable'
 import ItemThumb from '../Inventory/ItemThumb.vue'
-const MAX_REFINE = 15
+const MAX_REFINE = 20
 
 export default {
 	components: { ItemThumb},
@@ -88,10 +88,11 @@ export default {
             border-radius: 10px;
             padding: 4px;
             color: black;
-            transition: all 0.1s ease-in;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
             &:hover {
-                transform: scale(1.1, 1.1);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             }
         }
     }

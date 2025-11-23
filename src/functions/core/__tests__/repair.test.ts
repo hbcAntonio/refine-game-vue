@@ -44,7 +44,7 @@ describe('Repair System', () => {
   })
 
   describe('Required Points', () => {
-    it('should require 1 point for items broken at +6 or below', () => {
+    it('should not use points system for items broken below +6', () => {
       const lowLevelBroken: Equipment = {
         uid: 'test-3',
         nameid: 1234,
@@ -55,11 +55,12 @@ describe('Repair System', () => {
         resourceviewid: 'test'
       }
 
+      expect(repairState.usesPointSystem(lowLevelBroken)).toBe(false)
       const required = repairState.getRequiredPoints(lowLevelBroken)
-      expect(required).toBe(1)
+      expect(required).toBe(0)
     })
 
-    it('should require refineCount points for items broken above +6', () => {
+    it('should require refineCount points for items broken at +6 and above', () => {
       const highLevelBroken: Equipment = {
         uid: 'test-4',
         nameid: 1234,
@@ -70,23 +71,25 @@ describe('Repair System', () => {
         resourceviewid: 'test'
       }
 
+      expect(repairState.usesPointSystem(highLevelBroken)).toBe(true)
       const required = repairState.getRequiredPoints(highLevelBroken)
       expect(required).toBe(10)
     })
 
-    it('should require exactly refineCount points at boundary (+7)', () => {
+    it('should use points system at boundary (+6)', () => {
       const boundaryBroken: Equipment = {
         uid: 'test-5',
         nameid: 1234,
         name: 'Test Sword',
-        refineCount: 7,
+        refineCount: 6,
         attribute: 1,
         armor: false,
         resourceviewid: 'test'
       }
 
+      expect(repairState.usesPointSystem(boundaryBroken)).toBe(true)
       const required = repairState.getRequiredPoints(boundaryBroken)
-      expect(required).toBe(7)
+      expect(required).toBe(6)
     })
   })
 
@@ -127,7 +130,7 @@ describe('Repair System', () => {
   })
 
   describe('Repair Scenarios', () => {
-    it('should allow repairing +5 broken with 1 non-broken item', () => {
+    it('should allow repairing +5 broken with 1 non-broken item (simple system)', () => {
       const brokenItem: Equipment = {
         uid: 'broken-1',
         nameid: 1234,
@@ -148,13 +151,16 @@ describe('Repair System', () => {
         resourceviewid: 'test'
       }
 
-      const required = repairState.getRequiredPoints(brokenItem)
-      const provided = repairState.getItemPoints(material)
+      // Items below +6 don't use points system
+      expect(repairState.usesPointSystem(brokenItem)).toBe(false)
+      expect(repairState.getRequiredPoints(brokenItem)).toBe(0)
 
-      expect(provided).toBeGreaterThanOrEqual(required)
+      // Simply need 1 item
+      repairState.sd.selectedMaterials = [material]
+      expect(repairState.sd.selectedMaterials.length).toBe(1)
     })
 
-    it('should require 10 points to repair +10 broken item', () => {
+    it('should require 10 points to repair +10 broken item (points system)', () => {
       const brokenItem: Equipment = {
         uid: 'broken-2',
         nameid: 1234,
@@ -165,10 +171,12 @@ describe('Repair System', () => {
         resourceviewid: 'test'
       }
 
+      // Items at +6 and above use points system
+      expect(repairState.usesPointSystem(brokenItem)).toBe(true)
       const required = repairState.getRequiredPoints(brokenItem)
       expect(required).toBe(10)
 
-      // Could be repaired with 10 non-broken items
+      // Could be repaired with 10 non-broken items (each worth 1 point)
       const materials: Equipment[] = Array(10)
         .fill(null)
         .map((_, i) => ({
@@ -186,7 +194,7 @@ describe('Repair System', () => {
       expect(totalPoints).toBe(10)
     })
 
-    it('should allow repairing with combination of broken and non-broken items', () => {
+    it('should allow repairing with combination of broken and non-broken items (points system)', () => {
       // Repairing a +12 broken item
       const brokenItem: Equipment = {
         uid: 'broken-3',
@@ -197,6 +205,8 @@ describe('Repair System', () => {
         armor: false,
         resourceviewid: 'test'
       }
+
+      expect(repairState.usesPointSystem(brokenItem)).toBe(true)
 
       // Using 2 broken +3 items (6 points) and 6 non-broken (6 points) = 12 points
       const broken3x2: Equipment[] = [
@@ -238,6 +248,33 @@ describe('Repair System', () => {
 
       expect(totalPoints).toBe(12)
       expect(totalPoints).toBeGreaterThanOrEqual(required)
+    })
+
+    it('should allow repairing +3 broken with a +5 broken item (simple system)', () => {
+      const brokenItem: Equipment = {
+        uid: 'broken-4',
+        nameid: 1234,
+        name: 'Test Sword',
+        refineCount: 3,
+        attribute: 1,
+        armor: false,
+        resourceviewid: 'test'
+      }
+
+      const brokenMaterial: Equipment = {
+        uid: 'mat-broken',
+        nameid: 1234,
+        name: 'Test Sword',
+        refineCount: 5,
+        attribute: 1,
+        armor: false,
+        resourceviewid: 'test'
+      }
+
+      // Items below +6 don't use points system, just need 1 item
+      expect(repairState.usesPointSystem(brokenItem)).toBe(false)
+      repairState.sd.selectedMaterials = [brokenMaterial]
+      expect(repairState.sd.selectedMaterials.length).toBe(1)
     })
   })
 })

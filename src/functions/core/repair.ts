@@ -11,6 +11,12 @@ const sd = reactive<RepairState>({
   show: false
 })
 
+// Check if an item uses the points system for repair
+const usesPointSystem = (equip: Equipment): boolean => {
+  // Items at +6 and above use points system
+  return equip.refineCount >= 6
+}
+
 // Calculate the "point value" of an item for repair
 const getItemPoints = (item: Equipment): number => {
   // All items are worth their refineCount in points (minimum 1)
@@ -19,9 +25,12 @@ const getItemPoints = (item: Equipment): number => {
 
 // Calculate required points to repair an item
 const getRequiredPoints = (equip: Equipment): number => {
-  // Items broken at ≤+6: need 1 point
-  // Items broken at >+6: need refineCount points
-  return equip.refineCount <= 6 ? 1 : equip.refineCount
+  if (!usesPointSystem(equip)) {
+    // Items below +6 don't use points system
+    return 0
+  }
+  // Items at +6 and above need refineCount points
+  return equip.refineCount
 }
 
 // Calculate total points from selected materials
@@ -57,12 +66,11 @@ const clif_check_repair = (inventory: typeof inventoryState, equip: Equipment): 
     if (ref.uid === equip.uid) continue
     if (ref.nameid !== equip.nameid) continue
 
-    // For items broken at ≤+6: accept non-broken items or broken items <+6
-    // For items broken at >+6: accept any item of the same type
-    if (equip.refineCount <= 6) {
-      // Only allow non-broken or broken items with refineCount < 6
+    if (!usesPointSystem(equip)) {
+      // For items below +6: only accept non-broken items or broken items <+6
       if (ref.attribute && ref.refineCount >= 6) continue
     }
+    // For items at +6 and above: accept any item of the same type
 
     sd.materials[key] = ref
   }
@@ -78,6 +86,7 @@ export default {
   sd,
   start: clif_check_repair,
   repair: clif_repair_item,
+  usesPointSystem,
   getItemPoints,
   getRequiredPoints,
   getSelectedPoints
